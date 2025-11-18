@@ -1,10 +1,12 @@
-import logo from '../assets/logo.png';
 import styled from 'styled-components';
+import { Link } from 'wouter';
 import Image from './Image';
+import logo from '../assets/logo.png';
 import profileIcon from '../assets/profile_icon.png'
 import carIcon from '../assets/car_icon.png'
 import wrenchIcon from '../assets/wrench_icon.png'
 import suppliesIcon from '../assets/supplies_icon.png'
+import Title from './Title';
 
 const Navbar = styled.nav`
     height: 100vh;
@@ -15,21 +17,17 @@ const Navbar = styled.nav`
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    background-color: rgb(28, 33, 42);
+    background-color: rgba(28, 33, 42, 0.25);
 `
 
-const Brand = styled.div`
-    display: flex;
-    user-select: none;
-
-`
-
-const Item = styled.li`
+const StyledLink = styled(Link)`
     display: flex;
     align-items: center;
     justify-content: space-evenly;
     padding: 0.5rem;
-    background-color: rgb(40, 45, 56);
+    text-decoration: none;
+    color: white;
+    background-color: rgba(40, 45, 56, 0.6);
     user-select: none;
     cursor: pointer;
     &:hover {
@@ -41,25 +39,29 @@ const Item = styled.li`
     }
 `
 
-const Highlight = styled.h2`
-    color: rgb(64, 224, 208);
-    filter: drop-shadow(3px 2px 30px rgb(64, 224, 208));
+const HomeBtn = styled(Link)`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    text-decoration: none;
+ 
 `
-
 
 function Nav() {
     return (
         <>
         <Navbar>
-            <Brand>
-                <Image src={logo} alt="Logo" height={1000} />
-                <Highlight>Car-Care</Highlight>
-            </Brand>
+            <HomeBtn to='/'>
+                <Image src={logo} alt="Logo" />
+                <Title>Car-Care</Title>
+            </HomeBtn>
             <div>
-                <Item><Image src={profileIcon} />User Profile</Item>
-                <Item><Image src={carIcon} />Garage</Item>
-                <Item><Image src={wrenchIcon} />Services</Item>
-                <Item><Image src={suppliesIcon} />Supplies</Item>
+                <StyledLink to='/profile'><Image src={profileIcon} />User Profile</StyledLink>
+                <StyledLink to='/garage'><Image src={carIcon} />Garage</StyledLink>
+                <StyledLink to='/services'><Image src={wrenchIcon} />Services</StyledLink>
+                <StyledLink to='/supplies'><Image src={suppliesIcon} />Supplies</StyledLink>
             </div>
        
         </Navbar>

@@ -21,9 +21,14 @@ const Input = styled.input`
   border-width: 3px;
   box-shadow: 2px 2px 5px black;
   background: transparent;
+  transition: all 0.2 ease-in-out;
   &::placeholder {
     color: white;
     opacity: 0.5;
+  }
+  &:focus {
+    border: black;
+    outline: black;
   }
 `
 
@@ -37,20 +42,26 @@ const StyledButton = styled.button`
   align-items: center;
   background: transparent;
   border-radius: 6px;
+  background-color: rgba(10, 89, 89, 1);
   border-color: rgba(10, 230, 230, 1);
   border-width: 3px;
   color: white;
+  transition: 0.2s all ease-in-out;
   &:hover {
-    color: gray;
+    color: black;
+    background-color: rgba(2, 155, 155, 1);
     cursor: pointer;
   }
 `
 
 const StyledLink = styled.a`
+  margin: 0.2rem;
+  padding: 0.2rem;
+  font-size: 0.7rem;
   text-decoration: none;
   text-align: center;
-  padding: 0.2rem;
   color: white;
+  transition: 0.2s all ease-in-out;
   &:hover {
     color: gray;
     text-decoration: underline;
@@ -60,12 +71,12 @@ const StyledLink = styled.a`
 function Auth() {
   return (
         <Container>
-        <Form action="/register">
+        <Form action="/login">
           <Input type="text" placeholder='username' name='username' />
           <Input type="password" placeholder='password' name='password' />
           <StyledButton type='submit'>Login</StyledButton>
-            <StyledLink href="#">Forgot password</StyledLink>
-            <StyledLink href="#">Register here!</StyledLink>
+            <StyledLink href="/forgot">Forgot password</StyledLink>
+            <StyledLink href="/register">You don't have an account?<br />Register here!</StyledLink>
         </Form>
         </Container>
   )
