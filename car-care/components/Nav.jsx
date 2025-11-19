@@ -54,7 +54,7 @@ function Nav() {
         <>
         <Navbar>
             <HomeBtn to='/'>
-                <Image src={logo} alt="Logo" />
+                <img src={logo} height={75} alt="Logo" />
                 <Title>Car-Care</Title>
             </HomeBtn>
             <div>
