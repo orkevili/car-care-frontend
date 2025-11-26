@@ -6,11 +6,12 @@ import Garage from '../components/Garage'
 import Profile from '../components/Profile'
 import Services from '../components/Services'
 import Supplies from '../components/Supplies'
-import { navigate } from 'wouter/use-hash-location'
+import { AuthProvider } from '../components/AuthContext'
 
 function App() {
   return (
     <>
+    <AuthProvider>
     <Nav /> 
     <Route path="/" >
       <Auth />
@@ -27,6 +28,7 @@ function App() {
     <Route path="/supplies">
       <Supplies />
     </Route>
+    </AuthProvider>
     </>
   )
 }
