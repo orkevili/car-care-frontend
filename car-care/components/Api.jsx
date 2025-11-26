@@ -14,7 +14,7 @@ apiClient.interceptors.response.use(
     (error) => {
         if (error.response && error.response.status === 401) {
             console.warn("Lejárt a munkamenet.");
-            window.location.href = '/login'
+            window.location.href = '/'
         }
         return Promise.reject(error);
     }
@@ -22,13 +22,20 @@ apiClient.interceptors.response.use(
 
 export const AuthAPI = {
     login: (username, password) => apiClient.post('/login', { username, password }),
-    logout: () => apiClient.post('/logout'), 
+    logout: () => apiClient.get('/logout'), 
     getCurrentUser: () => apiClient.get('/'), 
 };
 
 export const VehicleAPI = {
     getAll: () => apiClient.get('/vehicles'),
-    // ... többi metódus
+    create: (newCar) => apiClient.post('/vehicles', { newCar }),
+    delete: (id) => apiClient.delete(`/${id}`),
+    update: (id, newCar) => apiClient.post(`/${id}`, { newCar })
 };
+
+export const ServiceAPI = {
+    getAll: () => apiClient.get('/services'),
+    getById: (id) => apiClient.get(`/${id}/services`)
+}
 
 export default apiClient;

@@ -1,12 +1,19 @@
 import styled from "styled-components"
-import Container from "./Container"
 import StyledButton from "./StyledButton"
 import { useState, useContext, useEffect } from "react"
 import { AuthContext } from "./AuthContext"
 import { useLocation, Link } from "wouter"
+import Title from "./Title"
+
+const Container = styled.div`
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+`
 
 const Form = styled.form`
-  width: 30%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -16,6 +23,7 @@ const Form = styled.form`
 
 const Input = styled.input`
   font-family: "Orbitron", sans-serif;
+  font-size: 1rem;
   color: white;
   margin: 0.2rem;
   padding: 0.3rem;
@@ -38,7 +46,7 @@ const Input = styled.input`
 const StyledLinkComponent = styled(Link)` 
   margin: 0.2rem;
   padding: 0.2rem;
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   text-decoration: none;
   text-align: center;
   color: white;
@@ -69,16 +77,16 @@ const ErrorMessage = styled.div`
 `
 
 function Auth() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState(null)
 
-  const { login, user, loading } = useContext(AuthContext); 
-  const [, setLocation] = useLocation(); 
+  const { login, message, user, loading } = useContext(AuthContext);
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     if (!loading && user) {
-      setLocation("/");
+      setLocation("/login")
     }
   }, [user, loading, setLocation]);
 
@@ -87,7 +95,7 @@ function Auth() {
     setError(null);
     const result = await login(username, password);
     if (result.success) {
-      setLocation("/");
+      setLocation("/profile");
     } else {
       setError(JSON.parse(result.message).error);
     }
@@ -99,6 +107,7 @@ function Auth() {
 
   return (
         <Container>
+        <Title>{message}</Title>
         <Form onSubmit={handleSubmit}>          
           {error && <ErrorMessage>{error}</ErrorMessage>}
           <Input 
@@ -118,7 +127,7 @@ function Auth() {
           <StyledButton type='submit'>Login</StyledButton>
             
             <StyledLinkComponent href="/forgot">Forgot password</StyledLinkComponent>
-            <StyledLinkComponent href="/register">
+            <StyledLinkComponent href="/">
                 You don't have an account?<br />Register here!
             </StyledLinkComponent>
         </Form>

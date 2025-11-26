@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import Image from './Image';
 import logo from '../assets/logo.png';
 import profileIcon from '../assets/profile_icon.png'
@@ -49,7 +49,15 @@ const HomeBtn = styled(Link)`
  
 `
 
-function Nav() {
+
+function Nav({user, logout}) {
+    const [, setLocation] = useLocation()
+
+    const handleLogout = () => {
+        logout()
+        setLocation('/')
+    }
+
     return (
         <>
         <Navbar>
@@ -57,13 +65,14 @@ function Nav() {
                 <img src={logo} height={75} alt="Logo" />
                 <Title>Car-Care</Title>
             </HomeBtn>
+            <StyledLink onClick={handleLogout}>{user.user}</StyledLink>
             <div>
                 <StyledLink to='/profile'><Image src={profileIcon} />User Profile</StyledLink>
                 <StyledLink to='/garage'><Image src={carIcon} />Garage</StyledLink>
                 <StyledLink to='/services'><Image src={wrenchIcon} />Services</StyledLink>
                 <StyledLink to='/supplies'><Image src={suppliesIcon} />Supplies</StyledLink>
             </div>
-       
+        
         </Navbar>
         </>
     )

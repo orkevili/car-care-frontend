@@ -5,13 +5,18 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [message, setMessage] = useState(null)
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const checkLoggedIn = async () => {
             try {
                 const response = await AuthAPI.getCurrentUser();
-                setUser(response.data); 
+                if (response.data.msg) {
+                    setMessage(response.data.msg);
+                } else {
+                    setUser(response.data); 
+                }
             } catch (error) {
                 setUser(null);
             } finally {
@@ -46,7 +51,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, message, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

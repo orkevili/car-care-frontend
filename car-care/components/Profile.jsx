@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import Container from "./Container";
 import Title from "./Title";
+import { useLocation } from "wouter";
+import { useState, useEffect } from "react";
+import { ServiceAPI, VehicleAPI } from "./Api";
+import Loader from "./Loading";
 
 const Card = styled.div`
     height: 100px;
@@ -32,25 +36,84 @@ const Description = styled.p`
 `
 
 function Profile() {
+    const [vehicles, setVehicles] = useState([]);
+    const [services, setServices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [, setLocation] = useLocation();
+
+    useEffect(() => {
+            const fetchVehicles = async () => {
+                try {
+                    const response = await VehicleAPI.getAll();
+                    const rawData = response.data.Vehicles;
+    
+                    if (rawData) {
+                        const vehiclesArray = Object.entries(rawData).map(([key, value]) => ({
+                            id: key,
+                            ...value
+                        }));                    
+                        setVehicles(vehiclesArray);
+                    } else {
+                        setVehicles([]);
+                    }
+    
+                } catch (error) {
+                    console.error("Hiba:", error);
+                    setVehicles([]);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const fetchServices = async () => {
+                try {
+                    const response = await ServiceAPI.getAll()
+                    const rawData = response.data.Services
+                    if (rawData) {
+                        const servicesArray = Object.entries(rawData).map(([key, value]) => ({
+                            id: key,
+                            ...value
+                        }))
+                        setServices(servicesArray)
+                    } else {
+                        setServices([])
+                    }
+                } catch (error) {
+                    console.error("Hiba:", error)
+                    setServices([])
+                } finally {
+                    setLoading(false)
+                }
+            }
+            
+            fetchVehicles()
+            fetchServices()
+        }, []);
+
     return (
         <>
-        <Container>
-            <Title>Profile</Title>
-        <CardsPage>
-        <Card>
-            <CardTitle>Total vehicles</CardTitle>
-            <Description>2</Description>
-        </Card>
-         <Card>
-            <CardTitle>Upcoming service</CardTitle>
-            <Description>Oil change</Description>
-        </Card>
-         <Card>
-            <CardTitle>Last service</CardTitle>
-            <Description>Brake pads</Description>
-        </Card>
-        </CardsPage>
-        </Container>
+        {loading ? (
+                <Loader />
+            ) : (
+                <Container>
+                {console.log(services)}
+                    <Title>Profile</Title>
+                <CardsPage>
+                <Card>
+                    <CardTitle>Vehicles</CardTitle>
+                    <Description>{vehicles.length}</Description>
+                </Card>
+                <Card>
+                    <CardTitle>Services</CardTitle>
+                    <Description>{services.length}</Description>
+                </Card>
+                <Card>
+                    <CardTitle>Total cost</CardTitle>
+                    <Description>{services.length}</Description>
+                </Card>
+                </CardsPage>
+                </Container>
+            )}
         </>
     )
 }
