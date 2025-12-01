@@ -1,0 +1,5 @@
+Backend/.env
+Backend/db.sqlite
+Backend/__pycache__/query.cpython-312.pyc
+Backend/__pycache__/database.cpython-312.pyc
+Backend/__pycache__/back.cpython-312.pyc
