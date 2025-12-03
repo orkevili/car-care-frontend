@@ -1,12 +1,14 @@
 import { useLocation } from "wouter";
-import apiClient, { ServiceAPI, VehicleAPI } from "./Api";
+import { VehicleAPI } from "./Api";
 import Container from "./Container";
 import StyledButton from "./StyledButton";
 import Title from "./Title";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { navigate } from "wouter/use-browser-location";
 import Loader from "./Loading";
+import { ModalContent, ModalInput, ModalOverlay, ModalTitle, DeleteButton, ActionButton, ActionModalContent, CancelButton, ButtonGroup } from "./Modal";
+import { toast } from "react-toastify";
+import { FiPlus } from "react-icons/fi";
 
 
 const Card = styled.div`
@@ -28,6 +30,7 @@ const Card = styled.div`
 const CardsPage = styled.div`
     display: flex;
     flex-direction: row;
+    justify-content: center;
     gap: 0.32rem;
     margin: 1rem;
     flex-wrap: wrap;
@@ -45,99 +48,10 @@ const Description = styled.p`
 `;
 
 
-const ModalOverlay = styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    backdrop-filter: blur(3px);
-`;
-
-const ModalContent = styled.div`
-    margin-left: 18%;
-    background: linear-gradient(135deg, rgba(20, 20, 20, 1), rgba(47, 116, 109, 0.8));
-    padding: 2rem;
-    border-radius: 12px;
-    border: 2px solid rgba(10, 230, 230, 1);
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 0 20px rgba(10, 230, 230, 0.5);
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-`;
-
-const ModalTitle = styled.h2`
-    color: white;
-    text-align: center;
-    font-family: "Orbitron", sans-serif;
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-`;
-
-const ModalInput = styled.input`
-    padding: 0.5rem;
-    border-radius: 4px;
-    border: 1px solid rgba(10, 230, 230, 0.5);
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    font-family: inherit;
-    &:focus {
-        outline: none;
-        border-color: rgba(10, 230, 230, 1);
-    }
-`;
-
-const ButtonGroup = styled.div`
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1rem;
-`;
-
-const CancelButton = styled(StyledButton)`
-    background-color: transparent;
-    border: 1px solid #ff6b6b;
-    color: #ff6b6b;
-    &:hover {
-        background-color: rgba(255, 107, 107, 0.1);
-        box-shadow: none;
-    }
-`;
-
-const ActionModalContent = styled(ModalContent)`
-    max-width: 300px;
-    padding: 1.5rem;
-    gap: 0.8rem;
-`;
-
-const ActionButton = styled(StyledButton)`
-    width: 100%;
-    margin: 0;
-    padding: 0.75rem 0;
-    font-size: 1rem;
-`;
-
-const DeleteButton = styled(ActionButton)`
-    background-color: transparent;
-    border: 1px solid #ff6b6b;
-    color: #ff6b6b;
-    &:hover {
-        background-color: rgba(255, 107, 107, 0.1);
-        box-shadow: none;
-    }
-`;
-
-
 function Garage() {
     const [vehicles, setVehicles] = useState([]);
-    const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [, setLocation] = useLocation();
     const [showEditModal, setShowEditModal] = useState(false); 
     const [showActionModal, setShowActionModal] = useState(false); 
     const [formData, setFormData] = useState({
@@ -148,7 +62,6 @@ function Garage() {
         fuel: "",
         plate: ""
     });
-    const [, setLocation] = useLocation();
 
     const fetchVehicles = async () => {
         try {
@@ -166,7 +79,8 @@ function Garage() {
                 setVehicles([]);
             }
         } catch (error) {
-            console.error("Hiba:", error);
+            console.error("Error requesting data:", error);
+            toast.error("Couldn't load the data.")
             setVehicles([]);
         } finally {
             setLoading(false);
@@ -187,10 +101,9 @@ function Garage() {
     
     const handleSave = async () => {
         if (!formData.brand || !formData.model || !formData.year ) {
-            alert("Márka, modell és év megadása kötelező!")
+            toast.warning("Make, model and year are required!")
             return;
         }
-
         try {
             if (formData.id) {
                 await VehicleAPI.update(formData.id, formData)
@@ -203,7 +116,7 @@ function Garage() {
             fetchVehicles()
             
         } catch (error) {
-            alert("Hiba történt a mentés során!");
+            alert("Error during save.");
             console.error(error);
         }
     };
@@ -233,25 +146,24 @@ function Garage() {
     };
 
     const handleDelete = async () => {
-        if (!window.confirm(`Biztosan törölni szeretnéd a(z) ${formData.brand} ${formData.model} nevű járművet?`)) {
+        if (!window.confirm(`Are you sure to delete ${formData.brand} ${formData.model} vehicle?`)) {
             return;
         }
-
         try {
             await VehicleAPI.delete(formData.id);
             fetchVehicles(); 
             setShowActionModal(false);
             resetForm();
         } catch (error) {
-            alert("Hiba történt a jármű törlése során.");
             console.error(error);
+            toast.error(`Error during deleting ${formData.brand} ${formData.model} vehicle.`)
         }
     };
     
     return (
         <Container>
             <Title>My garage</Title>
-            <StyledButton onClick={handleAddNew}>Add new</StyledButton>       
+            <StyledButton onClick={handleAddNew}><FiPlus /></StyledButton>       
             {loading ? (
                 <Loader />
             ) : (
@@ -260,52 +172,52 @@ function Garage() {
                         vehicles.map((vehicle) => (
                             <Card key={vehicle.id} onClick={() => handleCardClick(vehicle)}>
                                 <CardTitle>{vehicle.brand} {vehicle.model}</CardTitle>
-                                <Description>Évjárat:<br/>{vehicle.year}</Description>
-                                <Description>Üzemanyag: <br/>{vehicle.fuel}</Description>
+                                <Description>Year<br/>{vehicle.year}</Description>
+                                <Description>Fuel <br/>{vehicle.fuel}</Description>
                             </Card>
                         ))
                     ) : (
-                        <p style={{color: 'white'}}>Még nincs járműved.</p>
+                        <p style={{color: 'white'}}>You don't have any vehicles, yet.</p>
                     )}
                 </CardsPage>
             )}
             {showEditModal && (
                 <ModalOverlay onClick={() => setShowEditModal(false)}> 
                     <ModalContent onClick={(e) => e.stopPropagation()}>
-                        <ModalTitle>{formData.id ? 'Jármű módosítása' : 'Új jármű hozzáadása'}</ModalTitle>
+                        <ModalTitle>{formData.id ? 'Vehicle edit' : 'Add new vehicle'}</ModalTitle>
                         <ModalInput 
                             type="text" 
                             name="brand" 
-                            placeholder="Márka (pl. VW)" 
+                            placeholder="Make (Volkswagen)" 
                             value={formData.brand}
                             onChange={handleInputChange}
                         />
                         <ModalInput 
                             type="text" 
                             name="model" 
-                            placeholder="Modell (pl. Golf)" 
+                            placeholder="Model (Golf 5)" 
                             value={formData.model}
                             onChange={handleInputChange}
                         />
                         <ModalInput 
                             type="number" 
                             name="year" 
-                            placeholder="Évjárat" 
+                            placeholder="Year (2025)" 
                             value={formData.year}
                             onChange={handleInputChange}
                         />
                         <ModalInput 
                             type="text" 
                             name="fuel" 
-                            placeholder="Üzemanyag (pl. Dízel)" 
+                            placeholder="Fuel (Petrol)" 
                             value={formData.fuel}
                             onChange={handleInputChange}
                         />
 
                         <ButtonGroup>
-                            <CancelButton onClick={() => { setShowEditModal(false); resetForm(); }}>Mégse</CancelButton>
+                            <CancelButton onClick={() => { setShowEditModal(false); resetForm(); }}>Cancel</CancelButton>
                             <StyledButton onClick={handleSave}>
-                                {formData.id ? 'Módosítás mentése' : 'Létrehozás'}
+                                {formData.id ? 'Save changes' : 'Add'}
                             </StyledButton>
                         </ButtonGroup>
                     </ModalContent>
@@ -315,11 +227,11 @@ function Garage() {
             {showActionModal && formData.id && (
                 <ModalOverlay onClick={() => setShowActionModal(false)}> 
                     <ActionModalContent onClick={(e) => e.stopPropagation()}>
-                        <ModalTitle>Műveletek a(z) {formData.brand} járművel</ModalTitle>
-                        <ActionButton onClick={handleViewServices}>Szerviztörténet</ActionButton>
-                        <ActionButton onClick={handleEdit}>Adatok módosítása</ActionButton>
-                        <DeleteButton onClick={handleDelete}>Jármű törlése</DeleteButton>
-                        <CancelButton onClick={() => { setShowActionModal(false); resetForm(); }}>Bezárás</CancelButton>
+                        <ModalTitle>Operations with the {formData.brand}</ModalTitle>
+                        <ActionButton onClick={handleViewServices}>Service history</ActionButton>
+                        <ActionButton onClick={handleEdit}>Edit vehicle</ActionButton>
+                        <DeleteButton onClick={handleDelete}>Delete vehichle</DeleteButton>
+                        <CancelButton onClick={() => { setShowActionModal(false); resetForm(); }}>Close</CancelButton>
                     </ActionModalContent>
                 </ModalOverlay>
             )}
