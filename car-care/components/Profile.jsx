@@ -7,8 +7,12 @@ import { ServiceAPI, VehicleAPI } from "./Api";
 import Loader from "./Loading";
 
 const Card = styled.div`
-    height: 100px;
-    width: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 150px;
+    width: 150px;
     padding: 1rem;
     border-radius: 6px;
     background-color: rgba(47, 116, 109, 1);
@@ -21,10 +25,13 @@ const CardsPage = styled.div`
     flex-direction: row;
     gap: 0.25rem;
     box-shadow: 2px 3px 20px black;
+    @media only screen and (max-width: 1000px) {
+        flex-direction: column;
+    }
 `
 
 const CardTitle = styled.p`
-    font-size: 1rem;
+    font-size: 1.3rem;
     text-align: center;
     font-weight: bold;
     
@@ -32,7 +39,7 @@ const CardTitle = styled.p`
 
 const Description = styled.p`
     text-align: center;
-    font-size: 0.8rem;
+    font-size: 1rem;
 `
 
 function Profile() {
@@ -96,7 +103,6 @@ function Profile() {
                 <Loader />
             ) : (
                 <Container>
-                {console.log(services)}
                     <Title>Profile</Title>
                 <CardsPage>
                 <Card>
@@ -105,10 +111,6 @@ function Profile() {
                 </Card>
                 <Card>
                     <CardTitle>Services</CardTitle>
-                    <Description>{services.length}</Description>
-                </Card>
-                <Card>
-                    <CardTitle>Total cost</CardTitle>
                     <Description>{services.length}</Description>
                 </Card>
                 </CardsPage>
