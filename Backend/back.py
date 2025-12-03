@@ -45,9 +45,15 @@ def main():
     if not user:
         return {"sucess": True}, 200
     db = get_db()
-    row = db.execute("SELECT username FROM user WHERE id = ?", (user,)).fetchone()
+    user_row = db.execute("SELECT username, id FROM user WHERE id = ?", (user,)).fetchone()
+    user_id = user_row['id']
+    service_row = db.execute("SELECT sum(labor_cost) as 'cost', count(id) as 'ser_count' FROM service WHERE owner_id=?", (user_id,)).fetchone()
+    vehicle_row = db.execute("SELECT count(id) as 'veh_count' FROM vehicle WHERE owner_id=?",(user_id,)).fetchone()
     return {
-        "user": row['username']
+        "user": user_row['username'],
+        "totalCost": service_row['cost'],
+        "vehicleCount": vehicle_row['veh_count'],
+        "serviceCount": service_row['ser_count']
     }, 200
 
 @app.post("/register")
@@ -116,7 +122,7 @@ def user_services():
     db = get_db()
     services = db.execute("SELECT * FROM service WHERE owner_id=?", (user_id,)).fetchall()
     if not services: return jsonify({"msg": "You have no services added yet."}), 200
-    return {"Services": {service['id'] : {"name": service['name'], "description": service['description'], "odometer": service['odometer'], "time": service['time'], "cost": service['labor_cost'], "vehicle_id": service['vehicle_id']} for service in services}}, 200
+    return {"Services": {service['id'] : {"name": service['name'], "description": service['description'], "odometer": service['odometer'], "date": service['time'], "cost": service['labor_cost'], "vehicle_id": service['vehicle_id']} for service in services}}, 200
 
 
 @app.route("/<vehicle_id>", methods=['GET', 'POST', 'DELETE'])
@@ -152,16 +158,16 @@ def edit_delete_service(vehicle_id, service_id):
     db = get_db()
     if request.method == 'GET':
         service = db.execute("SELECT * FROM service WHERE owner_id = ? AND id = ?", (user_id, service_id)).fetchone()
-        return {"name": service['name'], "description": service['description'], "odometer": service['odometer'], "time": service['time'], "cost": service['labor_cost'], "vehicle_id": service['vehicle_id']}, 200
+        return {"name": service['name'], "description": service['description'], "odometer": service['odometer'], "date": service['time'], "cost": service['labor_cost'], "vehicle_id": service['vehicle_id']}, 200
     if request.method == 'POST':
         data = request.get_json(silent=True)['updatedService']
-        print(data)
+        id = data.get("id")
         name = data.get("name")
         description = data.get("description")
         date = data.get("date")
         odometer = data.get("odometer")
         cost = data.get("cost")
-        db.execute("UPDATE service SET name=?, description=?, time=?, odometer=?, labor_cost=?, owner_id=?, vehicle_id=?",(name, description, date, odometer, cost, user_id, vehicle_id))
+        db.execute("UPDATE service SET name=?, description=?, time=?, odometer=?, labor_cost=? WHERE id=?",(name, description, date, odometer, cost, id))
         db.commit()
         return {"msg": "Service data updated successfully"}, 200
     if request.method == 'DELETE':
@@ -179,7 +185,7 @@ def service(vehicle_id):
         services = db.execute("SELECT * FROM service WHERE vehicle_id=?", (vehicle_id,)).fetchall()
         parts = db.execute("SELECT * FROM part WHERE vehicle_id = ?", (vehicle_id,)).fetchall()
         if not services: return jsonify({"msg": "No services yet."})
-        return jsonify({"Services": {row["id"]: {"name": row["name"], "description": row['description'], "odometer": row['odometer'], "time": row['time']} for row in services}})
+        return jsonify({"Services": {row["id"]: {"name": row["name"], "description": row['description'],  "cost": row["labor_cost"], "odometer": row['odometer'], "date": row['time']} for row in services}})
     if request.method == 'POST':
         data = request.get_json(silent=True)['newService']
         name = data.get("name")
