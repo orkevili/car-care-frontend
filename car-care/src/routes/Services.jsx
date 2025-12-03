@@ -44,7 +44,6 @@ function Services() {
     const [vehicleMap, setVehicleMap] = useState({})
     const [match, params] = useRoute("/services/:vehicleId")
     const [showEditModal, setShowEditModal] = useState(false)
-    const [showActionModal, setShowActionModal] = useState(false)
     const [vehicleId, setVehicleId] = useState(null)
 
     const [formData, setFormData] = useState({
@@ -62,7 +61,7 @@ function Services() {
         setVehicleId(params ? params.vehicleId : null)
     }, [params])
     
-    const pageTitle = vehicleId ? <><Title>Service history</Title><SmallTitle>{vehicleMap[vehicleId]}</SmallTitle></>: <>All service history</>
+    const pageTitle = vehicleId ? <><Title>Service history</Title><SmallTitle>{vehicleMap[vehicleId]}</SmallTitle></>: <Title>All service history</Title>
 
     const fetchAllData = async () => {
         let serviceResponse;
@@ -132,7 +131,6 @@ function Services() {
             ...serviceData,
         }
         setFormData(editedData)
-        setShowActionModal(false)
         setShowEditModal(true)
     }
 
@@ -143,7 +141,6 @@ function Services() {
         try {
             await ServiceAPI.delete(formData.id, vehicleId);
             fetchAllData();
-            setShowActionModal(false);
             resetForm();
         } catch (error) {
             console.error(error);
