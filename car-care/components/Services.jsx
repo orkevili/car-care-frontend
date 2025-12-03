@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ServiceAPI, VehicleAPI } from "./Api"; 
 import Container from "./Container";
 import StyledButton from "./StyledButton";
-import Title from "./Title";
+import Title, { SmallTitle } from "./Title";
 import styled from "styled-components";
 import { useRoute } from "wouter";
 import Loader from "./Loading";
@@ -62,7 +62,7 @@ function Services() {
         setVehicleId(params ? params.vehicleId : null)
     }, [params])
     
-    const pageTitle = vehicleId ? `Service history ${vehicleMap[vehicleId]}` : "All service history"
+    const pageTitle = vehicleId ? <><Title>Service history</Title><SmallTitle>{vehicleMap[vehicleId]}</SmallTitle></>: <>All service history</>
 
     const fetchAllData = async () => {
         let serviceResponse;
@@ -109,7 +109,7 @@ function Services() {
 
     useEffect(() => {
         fetchAllData()
-    }, []); 
+    }, [vehicleId]); 
 
     const handleInputChange = (e) => {
         setFormData({
@@ -128,7 +128,6 @@ function Services() {
     }
 
     const handleEdit = (serviceData) => {
-        console.log(serviceData)
         const editedData = {
             ...serviceData,
         }
@@ -159,7 +158,7 @@ function Services() {
         }
         try {
             if (formData.id) {
-                await ServiceAPI.update(formData.id, formData.vehicle_id, formData)
+                await ServiceAPI.update(formData.id, vehicleId, formData)
             } else {
                 await ServiceAPI.create(vehicleId, formData)
             }
@@ -178,7 +177,7 @@ function Services() {
 
     return (
         <Container>
-            <Title>{pageTitle}</Title>
+            {pageTitle}
             {vehicleId && <StyledButton onClick={handleAddNew}><FiPlus /></StyledButton>}
             {loading ? (
                 <Loader />
@@ -196,7 +195,7 @@ function Services() {
                                     {!vehicleId ? <Td>{vehicleMap[event.vehicle_id] || `ID: ${event.vehicle_id}`}</Td> : <Td></Td>}
                                     <Td>{event.name}</Td>
                                     <Td>{event.odometer} km</Td>
-                                    <Td>{new Date(event.time).toLocaleDateString()}</Td>
+                                    <Td>{event.date}</Td>
                                     <Td>{event.cost} HUF</Td>
                                     <Td>{event.description}</Td>
                                     <Td>
