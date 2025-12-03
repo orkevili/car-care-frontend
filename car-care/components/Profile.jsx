@@ -3,7 +3,7 @@ import Container from "./Container";
 import Title from "./Title";
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
-import { ServiceAPI, VehicleAPI } from "./Api";
+import { AuthAPI, ServiceAPI, VehicleAPI } from "./Api";
 import Loader from "./Loading";
 
 const Card = styled.div`
@@ -46,56 +46,73 @@ function Profile() {
     const [vehicles, setVehicles] = useState([]);
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [cost, setCost] = useState(0);
+    const [vehicleCount, setVehicleCount] = useState(0);
+    const [serviceCount, setServiceCount] = useState(0);
     const [, setLocation] = useLocation();
 
     useEffect(() => {
-            const fetchVehicles = async () => {
-                try {
-                    const response = await VehicleAPI.getAll();
-                    const rawData = response.data.Vehicles;
-    
-                    if (rawData) {
-                        const vehiclesArray = Object.entries(rawData).map(([key, value]) => ({
-                            id: key,
-                            ...value
-                        }));                    
-                        setVehicles(vehiclesArray);
-                    } else {
-                        setVehicles([]);
-                    }
-    
-                } catch (error) {
-                    console.error("Hiba:", error);
-                    setVehicles([]);
-                } finally {
-                    setLoading(false);
-                }
-            };
+        const fetchUserData = async () => {
+        try {
+            const response = await AuthAPI.getUserData();
+            const { totalCost, vehicleCount, serviceCount } = response.data;
+            setCost(totalCost)
+            setVehicleCount(vehicleCount)
+            setServiceCount(serviceCount)
+        } catch(error) {
+            console.error(error)
+        } finally {
+            setLoading(false);
+        }
+        }
+        fetchUserData();
+    }, [])
 
-            const fetchServices = async () => {
-                try {
-                    const response = await ServiceAPI.getAll()
-                    const rawData = response.data.Services
-                    if (rawData) {
-                        const servicesArray = Object.entries(rawData).map(([key, value]) => ({
-                            id: key,
-                            ...value
-                        }))
-                        setServices(servicesArray)
-                    } else {
-                        setServices([])
-                    }
-                } catch (error) {
-                    console.error("Hiba:", error)
-                    setServices([])
-                } finally {
-                    setLoading(false)
-                }
-            }
-            
-            fetchVehicles()
-            fetchServices()
-        }, []);
+    // useEffect(() => {
+    //     const fetchVehicles = async () => {
+    //         try {
+    //             const response = await VehicleAPI.getAll();
+    //             const rawData = response.data.Vehicles;
+    //             if (rawData) {
+    //                 const vehiclesArray = Object.entries(rawData).map(([key, value]) => ({
+    //                     id: key,
+    //                     ...value
+    //                 }));                    
+    //                 setVehicles(vehiclesArray);
+    //             } else {
+    //                 setVehicles([]);
+    //             }
+    //         } catch (error) {
+    //             console.error("Hiba:", error);
+    //             setVehicles([]);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //         };
+
+    //     const fetchServices = async () => {
+    //         try {
+    //             const response = await ServiceAPI.getAll()
+    //             const rawData = response.data.Services
+    //             if (rawData) {
+    //                 const servicesArray = Object.entries(rawData).map(([key, value]) => ({
+    //                     id: key,
+    //                     ...value
+    //                 }))
+    //                 setServices(servicesArray)
+    //             } else {
+    //                 setServices([])
+    //             }
+    //         } catch (error) {
+    //             console.error("Hiba:", error)
+    //             setServices([])
+    //         } finally {
+    //             setLoading(false)
+    //         }
+    //     }
+    //     fetchServices();
+    //     fetchVehicles();
+    //     }, []);
 
     return (
         <>
@@ -106,12 +123,16 @@ function Profile() {
                     <Title>Profile</Title>
                 <CardsPage>
                 <Card>
+                    <CardTitle>Total cost</CardTitle>
+                    <Description>{cost} HUF</Description>
+                </Card>
+                <Card>
                     <CardTitle>Vehicles</CardTitle>
-                    <Description>{vehicles.length}</Description>
+                    <Description>{vehicleCount}</Description>
                 </Card>
                 <Card>
                     <CardTitle>Services</CardTitle>
-                    <Description>{services.length}</Description>
+                    <Description>{serviceCount}</Description>
                 </Card>
                 </CardsPage>
                 </Container>
