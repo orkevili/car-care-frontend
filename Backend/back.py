@@ -32,7 +32,7 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=30)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 CORS(app,
-     origins=['http://localhost:5173'], 
+     origins=['http://localhost:5173', 'https://car-care.shitbox.hu'], 
      supports_credentials=True,
      methods=["GET", "POST", "DELETE", "PATCH"],
      allow_headers=["Content-Type"]
@@ -219,4 +219,4 @@ def parts(vehicle_id):
         return {"msg": "Part upload success."}
 
 
-app.run(debug=True, host='localhost')
+app.run(debug=True, host='localhost', port=5555)

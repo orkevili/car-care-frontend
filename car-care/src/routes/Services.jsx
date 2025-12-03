@@ -8,7 +8,7 @@ import styled from "styled-components";
 import { useRoute } from "wouter";
 import { FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { ActionButton, ActionModalContent, ButtonGroup, CancelButton, ModalContent, ModalInput, ModalOverlay, ModalTitle } from "../components/Modal";
+import { ActionButton, ButtonGroup, CancelButton, ModalContent, ModalInput, ModalOverlay, ModalTitle } from "../components/Modal";
 
 const Table = styled.table`
     margin: 1rem;
