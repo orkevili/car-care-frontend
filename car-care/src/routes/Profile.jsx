@@ -43,8 +43,6 @@ const Description = styled.p`
 `
 
 function Profile() {
-    const [vehicles, setVehicles] = useState([]);
-    const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [cost, setCost] = useState(0);
     const [vehicleCount, setVehicleCount] = useState(0);
@@ -67,52 +65,6 @@ function Profile() {
         }
         fetchUserData();
     }, [])
-
-    // useEffect(() => {
-    //     const fetchVehicles = async () => {
-    //         try {
-    //             const response = await VehicleAPI.getAll();
-    //             const rawData = response.data.Vehicles;
-    //             if (rawData) {
-    //                 const vehiclesArray = Object.entries(rawData).map(([key, value]) => ({
-    //                     id: key,
-    //                     ...value
-    //                 }));                    
-    //                 setVehicles(vehiclesArray);
-    //             } else {
-    //                 setVehicles([]);
-    //             }
-    //         } catch (error) {
-    //             console.error("Hiba:", error);
-    //             setVehicles([]);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //         };
-
-    //     const fetchServices = async () => {
-    //         try {
-    //             const response = await ServiceAPI.getAll()
-    //             const rawData = response.data.Services
-    //             if (rawData) {
-    //                 const servicesArray = Object.entries(rawData).map(([key, value]) => ({
-    //                     id: key,
-    //                     ...value
-    //                 }))
-    //                 setServices(servicesArray)
-    //             } else {
-    //                 setServices([])
-    //             }
-    //         } catch (error) {
-    //             console.error("Hiba:", error)
-    //             setServices([])
-    //         } finally {
-    //             setLoading(false)
-    //         }
-    //     }
-    //     fetchServices();
-    //     fetchVehicles();
-    //     }, []);
 
     return (
         <>
