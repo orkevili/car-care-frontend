@@ -1,33 +1,41 @@
 import styled from 'styled-components';
 import { Link, useLocation } from 'wouter';
-import Image from './Image';
+import Image, { Logo } from './Image';
 import logo from '../assets/logo.png';
-import profileIcon from '../assets/profile_icon.png'
 import carIcon from '../assets/car_icon.png'
 import wrenchIcon from '../assets/wrench_icon.png'
 import suppliesIcon from '../assets/supplies_icon.png'
-import Title from './Title';
+import { SmallTitle } from './Title';
+import { FiLogOut } from 'react-icons/fi'
+
 
 const Navbar = styled.nav`
     height: 100vh;
-    width: 18%;
+    width: auto;
     z-index: 999;
-    position: absolute;
+    position: fixed;
     top: 0;   
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     background-color: rgba(28, 33, 42, 0.25);
+    box-shadow: 1px 0 12px rgba(0, 17, 17, 1);
+    @media only screen and (max-width: 1000px) {
+        font-size: 0.7rem;
+        width: auto;
+        align-items: center;
+
+    }
 `
 
 const StyledLink = styled(Link)`
+    font-size: 1rem;
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-around;
     padding: 0.5rem;
     text-decoration: none;
     color: white;
-    background-color: rgba(40, 45, 56, 0.6);
     user-select: none;
     cursor: pointer;
     &:hover {
@@ -37,6 +45,12 @@ const StyledLink = styled(Link)`
         background-color: rgb(0, 143, 151);
         box-shadow: 2px 3px 5px rgba(32, 244, 255, 1);
     }
+    @media only screen and (max-width: 1000px) {
+        & > span {
+            display: none;
+        }
+    }
+    
 `
 
 const HomeBtn = styled(Link)`
@@ -46,31 +60,46 @@ const HomeBtn = styled(Link)`
     align-items: center;
     user-select: none;
     text-decoration: none;
- 
+    color: white;
 `
 
+const LogoutBtn = styled.button`
+    display: flex;
+    gap: 1rem;
+    padding: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(40, 45, 56, 0.6);
+    border: none;
+    color: white;
+    font-size: 1.6rem;
+    transition: 2s ease-in-out;
+    & :hover {
+        cursor: pointer;
+        scale: 1.1;
+    }
+`
 
 function Nav({user, logout}) {
     const [, setLocation] = useLocation()
 
     const handleLogout = () => {
         logout()
-        setLocation('/')
+        setLocation('/login')
     }
 
     return (
         <>
         <Navbar>
             <HomeBtn to='/'>
-                <img src={logo} height={75} alt="Logo" />
-                <Title>Car-Care</Title>
+                <Logo src={logo} alt="Logo" />
+                <SmallTitle>Car-Care</SmallTitle>
             </HomeBtn>
-            <StyledLink onClick={handleLogout}>{user.user}</StyledLink>
-            <div>
-                <StyledLink to='/profile'><Image src={profileIcon} />User Profile</StyledLink>
-                <StyledLink to='/garage'><Image src={carIcon} />Garage</StyledLink>
-                <StyledLink to='/services'><Image src={wrenchIcon} />Services</StyledLink>
-                <StyledLink to='/supplies'><Image src={suppliesIcon} />Supplies</StyledLink>
+            <LogoutBtn onClick={handleLogout}>{user}<FiLogOut /></LogoutBtn>
+            <div className='menu-items'>
+                <StyledLink to='/garage'><Image src={carIcon} /><span>Garage</span></StyledLink>
+                <StyledLink to='/services'><Image src={wrenchIcon} /><span>Services</span></StyledLink>
+                <StyledLink to='/supplies'><Image src={suppliesIcon} /><span>Supplies</span></StyledLink>
             </div>
         
         </Navbar>
