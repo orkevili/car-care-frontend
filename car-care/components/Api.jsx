@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
 
 const apiClient = axios.create({
     baseURL: 'http://localhost:5000',
@@ -13,9 +12,8 @@ const apiClient = axios.create({
 apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && error.response.status === 401) {
-            console.warn("Lejárt a munkamenet.");
-            toast.warn("Token expired. Please login again.")
+        if(error.response && error.response.status === 401) {
+            console.warn("Session expired");
             window.location.href = '/'
         }
         return Promise.reject(error);
@@ -38,7 +36,10 @@ export const VehicleAPI = {
 
 export const ServiceAPI = {
     getAll: () => apiClient.get('/services'),
-    getById: (id) => apiClient.get(`/${id}/services`)
+    getById: (id) => apiClient.get(`/${id}/services`),
+    create: (vehicle_id, newService) => apiClient.post(`/${vehicle_id}/services`, { newService }),
+    update: (service_id, vehicle_id, updatedService) => apiClient.post(`/${vehicle_id}/${service_id}`, {updatedService}),
+    delete: (service_id, vehicle_id) => apiClient.delete(`/${vehicle_id}/${service_id}`)
 }
 
 export default apiClient;
