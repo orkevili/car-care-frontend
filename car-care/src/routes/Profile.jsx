@@ -1,10 +1,10 @@
 import styled from "styled-components";
-import Container from "./Container";
-import Title from "./Title";
+import Container from "../components/Container";
+import Title from "../components/Title";
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
-import { AuthAPI, ServiceAPI, VehicleAPI } from "./Api";
-import Loader from "./Loading";
+import { AuthAPI } from "../Api";
+import Loader from "../components/Loading";
 
 const Card = styled.div`
     display: flex;

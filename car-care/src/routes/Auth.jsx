@@ -1,10 +1,10 @@
 import styled from "styled-components"
-import StyledButton from "./StyledButton"
+import StyledButton from "../components/StyledButton"
 import { useState, useContext, useEffect } from "react"
-import { AuthContext } from "./AuthContext"
+import { AuthContext } from "../components/AuthContext"
 import { useLocation } from "wouter"
-import Title from "./Title"
-import Loader from "./Loading"
+import Title from "../components/Title"
+import Loader from "../components/Loading"
 import { toast } from "react-toastify"
 
 const Container = styled.div`

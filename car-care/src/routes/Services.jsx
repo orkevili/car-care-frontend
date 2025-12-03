@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { ServiceAPI, VehicleAPI } from "./Api"; 
-import Container from "./Container";
-import StyledButton from "./StyledButton";
-import Title, { SmallTitle } from "./Title";
+import { ServiceAPI, VehicleAPI } from "../Api"; 
+import Container from "../components/Container";
+import StyledButton from "../components/StyledButton";
+import Title, { SmallTitle } from "../components/Title";
+import Loader from "../components/Loading";
 import styled from "styled-components";
 import { useRoute } from "wouter";
-import Loader from "./Loading";
 import { FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { ActionButton, ActionModalContent, ButtonGroup, CancelButton, ModalContent, ModalInput, ModalOverlay, ModalTitle } from "./Modal";
+import { ActionButton, ActionModalContent, ButtonGroup, CancelButton, ModalContent, ModalInput, ModalOverlay, ModalTitle } from "../components/Modal";
 
 const Table = styled.table`
     margin: 1rem;

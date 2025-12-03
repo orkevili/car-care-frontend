@@ -1,12 +1,12 @@
 import { useLocation } from "wouter";
-import { VehicleAPI } from "./Api";
-import Container from "./Container";
-import StyledButton from "./StyledButton";
-import Title from "./Title";
+import { VehicleAPI } from "../Api";
+import Container from "../components/Container";
+import StyledButton from "../components/StyledButton";
+import Title from "../components/Title";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import Loader from "./Loading";
-import { ModalContent, ModalInput, ModalOverlay, ModalTitle, DeleteButton, ActionButton, ActionModalContent, CancelButton, ButtonGroup } from "./Modal";
+import Loader from "../components/Loading";
+import { ModalContent, ModalInput, ModalOverlay, ModalTitle, DeleteButton, ActionButton, ActionModalContent, CancelButton, ButtonGroup } from "../components/Modal";
 import { toast } from "react-toastify";
 import { FiPlus } from "react-icons/fi";
 
