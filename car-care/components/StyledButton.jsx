@@ -2,8 +2,9 @@ import styled from "styled-components";
 
 const StyledButton = styled.button`
   font-family: "Orbitron", sans-serif;
-  margin: 0.3rem;
-  padding: 0.6rem;
+  font-size: 1.3rem;
+  margin: 0.5rem;
+  padding: 1.2rem;
   max-height: 1.5rem;
   display: flex;
   justify-content: center;
@@ -19,6 +20,9 @@ const StyledButton = styled.button`
     color: black;
     background-color: rgba(2, 155, 155, 1);
     cursor: pointer;
+  }
+  @media only screen and (max-width: 1000px) {
+    font-size: 0.72rem;
   }
 `
 
