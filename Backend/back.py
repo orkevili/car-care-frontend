@@ -28,7 +28,7 @@ app.config["JWT_COOKIE_CSRF_PROTECT"] = False
 app.config["JWT_ACCESS_COOKIE_PATH"] = '/'
 app.config["JWT_ACCESS_COOKIE_NAME"] = 'token'
 app.config["JWT_SECRET_KEY"] = "super-secret"
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=15)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=30)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 CORS(app,
@@ -43,7 +43,7 @@ CORS(app,
 def main():
     user = get_jwt_identity()
     if not user:
-        return {"msg": "Please register or login."}, 200
+        return {"sucess": True}, 200
     db = get_db()
     row = db.execute("SELECT username FROM user WHERE id = ?", (user,)).fetchone()
     return {
@@ -101,7 +101,6 @@ def user_vehicles():
         return {"Vehicles": {vehicle['id'] : {"brand": vehicle['brand'], "model": vehicle['model'], "year": vehicle['year'], "fuel": vehicle['fuel_type']} for vehicle in vehicles}}, 200
     if request.method == 'POST':
         data = request.get_json(silent=True)['newCar']
-        print(data)
         brand = data.get("brand")
         model = data.get("model")
         year = data.get("year")
@@ -119,6 +118,7 @@ def user_services():
     if not services: return jsonify({"msg": "You have no services added yet."}), 200
     return {"Services": {service['id'] : {"name": service['name'], "description": service['description'], "odometer": service['odometer'], "time": service['time'], "cost": service['labor_cost'], "vehicle_id": service['vehicle_id']} for service in services}}, 200
 
+
 @app.route("/<vehicle_id>", methods=['GET', 'POST', 'DELETE'])
 @jwt_required()
 def vehicle(vehicle_id):
@@ -129,7 +129,6 @@ def vehicle(vehicle_id):
         return jsonify({"vehicle": {"brand": vehicle['brand'], "model": vehicle['model'], "year": vehicle['year'], "fuel": vehicle['fuel_type']}})
     if request.method == 'POST':
         data = request.get_json(silent=True)['newCar']
-        print(data)
         brand = data.get("brand")
         model = data.get("model")
         year = data.get("year")
@@ -146,7 +145,30 @@ def vehicle(vehicle_id):
         return jsonify({"error": "vehicle not found."})
     
 
-
+@app.route("/<vehicle_id>/<service_id>", methods=['GET', 'POST', 'DELETE'])
+@jwt_required()
+def edit_delete_service(vehicle_id, service_id):
+    user_id = get_jwt_identity()
+    db = get_db()
+    if request.method == 'GET':
+        service = db.execute("SELECT * FROM service WHERE owner_id = ? AND id = ?", (user_id, service_id)).fetchone()
+        return {"name": service['name'], "description": service['description'], "odometer": service['odometer'], "time": service['time'], "cost": service['labor_cost'], "vehicle_id": service['vehicle_id']}, 200
+    if request.method == 'POST':
+        data = request.get_json(silent=True)['updatedService']
+        print(data)
+        name = data.get("name")
+        description = data.get("description")
+        date = data.get("date")
+        odometer = data.get("odometer")
+        cost = data.get("cost")
+        db.execute("UPDATE service SET name=?, description=?, time=?, odometer=?, labor_cost=?, owner_id=?, vehicle_id=?",(name, description, date, odometer, cost, user_id, vehicle_id))
+        db.commit()
+        return {"msg": "Service data updated successfully"}, 200
+    if request.method == 'DELETE':
+        db.execute("DELETE FROM service WHERE id=?", (service_id,))
+        db.commit()
+        return {"msg": "Service data deleted successfully"}, 200
+    
 
 @app.route("/<vehicle_id>/services", methods=['GET', 'POST'])
 @jwt_required()
@@ -157,14 +179,15 @@ def service(vehicle_id):
         services = db.execute("SELECT * FROM service WHERE vehicle_id=?", (vehicle_id,)).fetchall()
         parts = db.execute("SELECT * FROM part WHERE vehicle_id = ?", (vehicle_id,)).fetchall()
         if not services: return jsonify({"msg": "No services yet."})
-        print({"parts": {part['name'], part['number'], part['quantity'], part['price']}  for part in parts})
         return jsonify({"Services": {row["id"]: {"name": row["name"], "description": row['description'], "odometer": row['odometer'], "time": row['time']} for row in services}})
     if request.method == 'POST':
-        name = request.get_json()["name"]
-        description = request.get_json()["description"]
-        odometer = request.get_json()["odometer"]
-        cost = request.get_json()["cost"]
-        db.execute("INSERT INTO service (name, description, odometer, labor_cost, owner_id, vehicle_id) VALUES (?,?,?,?,?,?)",(name, description, odometer, cost, user_id, vehicle_id))
+        data = request.get_json(silent=True)['newService']
+        name = data.get("name")
+        description = data.get("description")
+        date = data.get("date")
+        odometer = data.get("odometer")
+        cost = data.get("cost")
+        db.execute("INSERT INTO service (name, description, time, odometer, labor_cost, owner_id, vehicle_id) VALUES (?,?,?,?,?,?,?)",(name, description, date, odometer, cost, user_id, vehicle_id))
         db.commit()
         return {"msg": "Service upload success."}
         
