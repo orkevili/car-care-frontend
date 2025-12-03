@@ -12,10 +12,13 @@ import { FiPlus } from "react-icons/fi";
 
 
 const Card = styled.div`
-    padding: 0.6rem;
-    height: 170px;
-    width: 170px;
+    height: 200px;
+    width: 200px;
     border-radius: 6px;
+    padding: 0.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
     background-color: rgba(47, 116, 109, 1);
     border: 2px solid;
     border-color: rgba(10, 230, 230, 1);
@@ -45,6 +48,11 @@ const CardTitle = styled.p`
 const Description = styled.p`
     text-align: center;
     font-size: 0.9rem;
+    margin: 0.75rem;
+    & > span {
+        margin-top: 0.2rem;
+        color: rgba(6, 255, 201, 1);
+    }
 `;
 
 
@@ -172,8 +180,8 @@ function Garage() {
                         vehicles.map((vehicle) => (
                             <Card key={vehicle.id} onClick={() => handleCardClick(vehicle)}>
                                 <CardTitle>{vehicle.brand} {vehicle.model}</CardTitle>
-                                <Description>Year<br/>{vehicle.year}</Description>
-                                <Description>Fuel <br/>{vehicle.fuel}</Description>
+                                <Description>Year<br/><span>{vehicle.year}</span></Description>
+                                <Description>Fuel <br/><span>{vehicle.fuel}</span></Description>
                             </Card>
                         ))
                     ) : (
