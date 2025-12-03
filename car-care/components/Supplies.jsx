@@ -5,9 +5,9 @@ import Title from "./Title";
 function Supplies() {
     return (
         <>
-        <Loader />
         <Container>
-            <Title>Supplies</Title>
+            <Title>Under development..</Title>
+
         </Container>
         </>
     )
