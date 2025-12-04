@@ -18,13 +18,13 @@ const Navbar = styled.nav`
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    background-color: rgba(28, 33, 42, 0.25);
+    background-color: rgba(28, 33, 42, 0.45);
     box-shadow: 1px 0 12px rgba(0, 17, 17, 1);
     @media only screen and (max-width: 1000px) {
+        width: 100%;
+        flex-direction: row;
+        height: 10vh;
         font-size: 0.7rem;
-        width: auto;
-        align-items: center;
-
     }
 `
 
@@ -61,6 +61,15 @@ const HomeBtn = styled(Link)`
     user-select: none;
     text-decoration: none;
     color: white;
+    @media only screen and (max-width: 1000px) {
+        display: block;
+        & > h2 {
+            display: none;
+        }
+        & > img {
+            max-height: 8vh;
+        }
+    }
 `
 
 const LogoutBtn = styled.button`
@@ -77,6 +86,23 @@ const LogoutBtn = styled.button`
     & :hover {
         cursor: pointer;
         scale: 1.1;
+    }
+    @media only screen and (max-width: 1000px) {
+        background: none;
+        font-size: 1rem;
+    }
+`
+
+const MenuGroup = styled.div`
+    background-color: rgba(40, 45, 56, 0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-height: 5rem;
+    @media only screen and (max-width: 1000px) {
+        background: none;
+        flex-direction: row;
     }
 `
 
@@ -96,11 +122,11 @@ function Nav({user, logout}) {
                 <SmallTitle>Car-Care</SmallTitle>
             </HomeBtn>
             <LogoutBtn onClick={handleLogout}>{user}<FiLogOut /></LogoutBtn>
-            <div className='menu-items'>
+            <MenuGroup>
                 <StyledLink to='/garage'><Image src={carIcon} /><span>Garage</span></StyledLink>
                 <StyledLink to='/services'><Image src={wrenchIcon} /><span>Services</span></StyledLink>
                 <StyledLink to='/supplies'><Image src={suppliesIcon} /><span>Supplies</span></StyledLink>
-            </div>
+            </MenuGroup>
         
         </Navbar>
         </>
