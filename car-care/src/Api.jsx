@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: 'https://api.shitbox.hu/',
+    baseURL: 'http://localhost:5555/',
     timeout: 5000,
     withCredentials: true, 
     headers: {

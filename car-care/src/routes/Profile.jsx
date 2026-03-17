@@ -73,20 +73,20 @@ function Profile() {
             ) : (
                 <Container>
                     <Title>Profile</Title>
-                <CardsPage>
-                <Card>
-                    <CardTitle>Total cost</CardTitle>
-                    <Description>{cost} HUF</Description>
-                </Card>
-                <Card>
-                    <CardTitle>Vehicles</CardTitle>
-                    <Description>{vehicleCount}</Description>
-                </Card>
-                <Card>
-                    <CardTitle>Services</CardTitle>
-                    <Description>{serviceCount}</Description>
-                </Card>
-                </CardsPage>
+                    <CardsPage>
+                    <Card>
+                        <CardTitle>Total cost</CardTitle>
+                        <Description>{cost} HUF</Description>
+                    </Card>
+                    <Card>
+                        <CardTitle>Vehicles</CardTitle>
+                        <Description>{vehicleCount}</Description>
+                    </Card>
+                    <Card>
+                        <CardTitle>Services</CardTitle>
+                        <Description>{serviceCount}</Description>
+                    </Card>
+                    </CardsPage>
                 </Container>
             )}
         </>
