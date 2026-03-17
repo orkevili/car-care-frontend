@@ -33,7 +33,7 @@ CREATE TABLE service (
     name TEXT NOT NULL,
     description TEXT,
     odometer INTEGER NOT NULL,
-    time TEXT DEFAULT "2025-01-01",
+    time TEXT DEFAULT "2026-01-01",
     labor_cost INTEGER NOT NULL DEFAULT 0,
     owner_id INTEGER NOT NULL,
     vehicle_id INTEGER NOT NULL

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:5555/',
+    baseURL: 'http://localhost:8000/',
     timeout: 5000,
     withCredentials: true, 
     headers: {
@@ -21,9 +21,9 @@ apiClient.interceptors.response.use(
 );
 
 export const AuthAPI = {
-    register: (username, password) => apiClient.post('/register', { username, password }),
-    login: (username, password) => apiClient.post('/login', { username, password }),
-    logout: () => apiClient.get('/logout'), 
+    register: (username, password) => apiClient.post('/register/', { username, password }),
+    login: (username, password) => apiClient.post('/login/', { username, password }),
+    logout: () => apiClient.get('/logout/'), 
     getUserData: () => apiClient.get('/'), 
 };
 

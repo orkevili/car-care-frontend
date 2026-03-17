@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    allowedHosts: ['car-care.shitbox.hu']
+    allowedHosts: ['localhost']
   }
 })

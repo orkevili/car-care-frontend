@@ -60,10 +60,22 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (username, password) => {
         try {
-            await AuthAPI.login(username, password);
-            const response = await AuthAPI.getUserData();
-            setUser(response.data.user);
-            return { success: true };
+            const loginResponse = await AuthAPI.login(username, password);
+            const { access, refresh } = loginResponse.data;
+
+            localStorage.setItem("accessToken", access);
+            localStorage.setItem("refreshToken", refresh);
+
+            try {
+                 const userResponse = await AuthAPI.getUserData();
+                 setUser(userResponse.data.user || username)
+            } catch(userError) {
+                console.warn('No user data found.');
+                setUser(username);
+            }
+
+            return { succes: true, access, refresh };
+            
         } catch (error) {
             let errorMessage = "Hiba történt.";
              if (error.response && error.response.data) {

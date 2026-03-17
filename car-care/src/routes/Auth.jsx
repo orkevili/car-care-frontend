@@ -79,12 +79,12 @@ function Auth() {
   useEffect(() => {
     toast(message, { type: "info" })
     if (!loading && user) {
-      setLocation("/login")
+      setLocation("/login/")
     }
     if (registerForm) {
-      setLocation("/register")
+      setLocation("/register/")
     } else {
-      setLocation("/login")
+      setLocation("/login/")
     }
   }, [user, loading, registerForm]);
 
@@ -98,15 +98,14 @@ function Auth() {
   }, [message])
 
 
-
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     if (!registerForm) {
       const result = await login(username, password);
-      if (result.success) {
-        // toast.success("You’re in!")
+      if (result.access) {
+        toast.success("You’re in!")
         setLocation("/profile");
       } else {
         setError(JSON.parse(result.message).error);
