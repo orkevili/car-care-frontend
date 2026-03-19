@@ -9,12 +9,28 @@ const apiClient = axios.create({
     }
 });
 
+apiClient.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+)
+
 apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         if(error.response && error.response.status === 401) {
-            console.warn("Session expired");
-            window.location.href = '/'
+            console.warn("Session expired or unauthorized");
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("user");
+            window.location.href = '/login/';
         }
         return Promise.reject(error);
     }
@@ -24,22 +40,22 @@ export const AuthAPI = {
     register: (username, password) => apiClient.post('/register/', { username, password }),
     login: (username, password) => apiClient.post('/login/', { username, password }),
     logout: () => apiClient.get('/logout/'), 
-    getUserData: () => apiClient.get('/'), 
+    getUserData: () => apiClient.get('/me/'), 
 };
 
 export const VehicleAPI = {
-    getAll: () => apiClient.get('/vehicles'),
-    create: (newCar) => apiClient.post('/vehicles', { newCar }),
+    getAll: () => apiClient.get('/vehicles/'),
+    create: (newCar) => apiClient.post('/vehicles/', { newCar }),
     delete: (id) => apiClient.delete(`/${id}`),
     update: (id, newCar) => apiClient.post(`/${id}`, { newCar })
 };
 
 export const ServiceAPI = {
-    getAll: () => apiClient.get('/services'),
-    getById: (id) => apiClient.get(`/${id}/services`),
-    create: (vehicle_id, newService) => apiClient.post(`/${vehicle_id}/services`, { newService }),
-    update: (service_id, vehicle_id, updatedService) => apiClient.post(`/${vehicle_id}/${service_id}`, {updatedService}),
-    delete: (service_id, vehicle_id) => apiClient.delete(`/${vehicle_id}/${service_id}`)
+    getAll: () => apiClient.get('/services/'),
+    getById: (id) => apiClient.get(`/${id}/services/`),
+    create: (vehicle_id, newService) => apiClient.post(`/${vehicle_id}/services/`, { newService }),
+    update: (service_id, vehicle_id, updatedService) => apiClient.post(`/${vehicle_id}/${service_id}/`, {updatedService}),
+    delete: (service_id, vehicle_id) => apiClient.delete(`/${vehicle_id}/${service_id}/`)
 }
 
 export default apiClient;

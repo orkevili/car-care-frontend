@@ -105,7 +105,7 @@ function Services() {
         try {
             setLoading(true);                
             const vehicleResponse = await VehicleAPI.getAll();
-            const rawVehicleData = vehicleResponse.data.Vehicles; 
+            const rawVehicleData = vehicleResponse.data; 
             const map = {};
             if (rawVehicleData) {
                 const vehicleArray = Object.entries(rawVehicleData).map(([key, value]) => ({ id: key, ...value }));
@@ -121,7 +121,8 @@ function Services() {
                 serviceResponse = await ServiceAPI.getAll(); 
             }
             
-            const rawServiceData = serviceResponse.data.Services; 
+            const rawServiceData = serviceResponse.data; 
+            console.log(rawServiceData) ;
             
             if (rawServiceData) {
                 const servicesArray = Object.entries(rawServiceData).map(([key, value]) => ({

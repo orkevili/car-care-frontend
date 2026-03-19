@@ -66,19 +66,23 @@ function Garage() {
         id: null,
         brand: "",
         model: "",
+        plate: "",
         year: "",
         fuel: "",
-        plate: ""
+        purchase_date: "",
+        purchase_price: "",
+        purchase_odometer: "",
     });
 
     const fetchVehicles = async () => {
         try {
             setLoading(true);
             const response = await VehicleAPI.getAll();
-            const rawData = response.data.Vehicles;
+            const vehicleData = response.data;
+            console.log(vehicleData);
 
-            if (rawData) {
-                const vehiclesArray = Object.entries(rawData).map(([key, value]) => ({
+            if (vehicleData) {
+                const vehiclesArray = Object.entries(vehicleData).map(([key, value]) => ({
                     id: key,
                     ...value
                 }));
@@ -208,6 +212,13 @@ function Garage() {
                             onChange={handleInputChange}
                         />
                         <ModalInput 
+                            type="text"
+                            name="plate"
+                            placeholder="License plate ASD-123"
+                            value={formData.plate}
+                            onChange={handleInputChange}
+                        />
+                        <ModalInput 
                             type="number" 
                             name="year" 
                             placeholder="Year (2025)" 
@@ -219,6 +230,27 @@ function Garage() {
                             name="fuel" 
                             placeholder="Fuel (Petrol)" 
                             value={formData.fuel}
+                            onChange={handleInputChange}
+                        />
+                        <ModalInput 
+                            type="date"
+                            name="purchase_date"
+                            placeholder="Puchase date"
+                            value={formData.purchase_date}
+                            onChange={handleInputChange}
+                        />
+                        <ModalInput 
+                            type="number"
+                            name="purchase_price"
+                            placeholder="Purchase price"
+                            value={formData.purchase_price}
+                            onChange={handleInputChange}
+                        />
+                        <ModalInput 
+                            type="number"
+                            name="purchase_odometer"
+                            placeholder="Odometer"
+                            value={formData.purchase_odometer}
                             onChange={handleInputChange}
                         />
 

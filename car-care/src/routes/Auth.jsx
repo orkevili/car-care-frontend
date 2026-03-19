@@ -88,16 +88,6 @@ function Auth() {
     }
   }, [user, loading, registerForm]);
 
-  useEffect(() => {
-    toast(error, {
-      type: "error"})
-  }, [error])
-
-  useEffect(() => {
-    toast.info(message)
-  }, [message])
-
-
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -105,7 +95,6 @@ function Auth() {
     if (!registerForm) {
       const result = await login(username, password);
       if (result.access) {
-        toast.success("You’re in!")
         setLocation("/profile");
       } else {
         setError(JSON.parse(result.message).error);
@@ -113,7 +102,6 @@ function Auth() {
     } else {
       const result = await register(username, password)
       if (result.success) {
-        // toast.success("Welcome aboard!")
         setRegisterForm(false)
         setLocation("/login")
       } else {

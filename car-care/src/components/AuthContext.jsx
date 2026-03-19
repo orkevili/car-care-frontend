@@ -12,39 +12,37 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const checkLoggedIn = async () => {
+            const token = localStorage.getItem("accessToken");
+            if (!token) {
+                setUser(null);
+                setLoading(false);
+                return;
+            }
+
             try {
                 const response = await AuthAPI.getUserData();
-                setServerDown(false)
+                setServerDown(false);
+                setUser(response.data.user);
+                
                 if (response.data.msg) {
                     setMessage(response.data.msg);
-                } else {
-                    setUser(response.data.user);
-                    setMessage(response.data); 
                 }
-                toast.info(response.data.msg)
             } catch (error) {
-                if (!error.response || error.code === 'ECONNREFUSED') {
-                    setTimeout(checkLoggedIn, 5000)
-                    setServerDown(true)
-                }   
-                toast.error("Trying to reconnect in 5 seconds.")
+                console.warn("Session expired or server unreachable.");
                 setUser(null);
-            } finally {
-                if(!serverDown) {
-                    setLoading(false);
+                
+                if (error.code === 'ERR_NETWORK') {
+                    setServerDown(true);
+                    toast.error("Nem sikerült kapcsolódni a szerverhez.");
                 }
+                
+            } finally {
+                setLoading(false);
             }
         };
+
         checkLoggedIn();
     }, []);
-
-    useEffect(() => {
-        if(user) {
-            localStorage.setItem("user", user)
-        } else {
-            localStorage.removeItem("user")
-        }
-    }, [user])
 
     const register = async (username, password) => {
         try {
@@ -68,7 +66,7 @@ export const AuthProvider = ({ children }) => {
 
             try {
                  const userResponse = await AuthAPI.getUserData();
-                 setUser(userResponse.data.user || username)
+                 setUser(userResponse.data.user || username);
             } catch(userError) {
                 console.warn('No user data found.');
                 setUser(username);
@@ -77,28 +75,31 @@ export const AuthProvider = ({ children }) => {
             return { succes: true, access, refresh };
             
         } catch (error) {
-            let errorMessage = "Hiba történt.";
-             if (error.response && error.response.data) {
-                errorMessage = error.response.data.message || JSON.stringify(error.response.data);
-             }
-             return { success: false, message: errorMessage };
+            let errorMessage = "Hiba történt."
+            if (error.response && error.response.data) {
+                errorMessage = error.response.data.detail || JSON.stringify(error.response.data);
+                toast.errror(errorMessage);
+            }
+            return { success: false, message: errorMessage };
         }
     };
 
     const logout = async () => {
         try {
-            await AuthAPI.logout();
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
         } catch (e) {
             console.error(e);
         }
         setUser(null);
+        toast.info("Logged out.");
     };
 
     return (
         <AuthContext.Provider value={{ user, register, login, logout, message, setMessage, loading, serverDown }}>
             {children}
             <ToastContainer
-                position="top-top-right"
+                position="top-right"
                 autoClose={5000}
                 hideProgressBar={true}
                 newestOnTop={false}
