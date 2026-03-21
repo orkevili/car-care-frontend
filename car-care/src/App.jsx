@@ -44,7 +44,7 @@ function App() {
     />
     <Switch>
     <Route path="/" >
-      {user ? <Redirect to='/profile' /> : <Redirect to='/login' />}
+      {user ? <Redirect to='/garage' /> : <Redirect to='/login' />}
     </Route>
     <Route path="/login">
       {user ? <Redirect to='/profile' /> : <Auth />}
@@ -58,7 +58,7 @@ function App() {
     <Route path="/garage">
       {user ? <Garage /> : <Redirect to='/login' />}
     </Route>
-    <Route path="/services/:vehicleId?">
+    <Route path="/vehicles/:vehicleId?">
       {user ? <Services /> : <Redirect to='/' />}
     </Route>
     <Route path="/supplies">

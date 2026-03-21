@@ -78,17 +78,9 @@ function Garage() {
         try {
             setLoading(true);
             const response = await VehicleAPI.getAll();
-            const vehicleData = response.data;
-            console.log(vehicleData);
 
-            if (vehicleData) {
-                const vehiclesArray = Object.entries(vehicleData).map(([key, value]) => ({
-                    id: key,
-                    ...value
-                }));
-                setVehicles(vehiclesArray);
-            } else {
-                setVehicles([]);
+            if (Array.isArray(response.data)) {
+                setVehicles(response.data);
             }
         } catch (error) {
             console.error("Error requesting data:", error);
@@ -171,10 +163,15 @@ function Garage() {
             toast.error(`Error during deleting ${formData.brand} ${formData.model} vehicle.`)
         }
     };
+
+    const handleSelectVehicle = () => {
+        setShowActionModal(false);
+        setLocation(`/vehicles/${formData.id}`);
+    };
     
     return (
         <Container>
-            <Title>My garage</Title>
+            <Title>Select a vehicle</Title>
             <StyledButton onClick={handleAddNew}><FiPlus /></StyledButton>       
             {loading ? (
                 <Loader />
@@ -183,7 +180,7 @@ function Garage() {
                     {Array.isArray(vehicles) && vehicles.length > 0 ? (
                         vehicles.map((vehicle) => (
                             <Card key={vehicle.id} onClick={() => handleCardClick(vehicle)}>
-                                <CardTitle>{vehicle.brand} {vehicle.model}</CardTitle>
+                                <CardTitle>{vehicle.make} {vehicle.model}</CardTitle>
                                 <Description>Year<br/><span>{vehicle.year}</span></Description>
                                 <Description>Fuel <br/><span>{vehicle.fuel}</span></Description>
                             </Card>
@@ -268,6 +265,7 @@ function Garage() {
                 <ModalOverlay onClick={() => setShowActionModal(false)}> 
                     <ActionModalContent onClick={(e) => e.stopPropagation()}>
                         <ModalTitle>Operations with the {formData.brand}</ModalTitle>
+                        <ActionButton onClick={handleSelectVehicle}>Select</ActionButton>
                         <ActionButton onClick={handleViewServices}>Service history</ActionButton>
                         <ActionButton onClick={handleEdit}>Edit vehicle</ActionButton>
                         <DeleteButton onClick={handleDelete}>Delete vehichle</DeleteButton>

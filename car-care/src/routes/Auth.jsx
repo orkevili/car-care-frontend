@@ -95,7 +95,7 @@ function Auth() {
     if (!registerForm) {
       const result = await login(username, password);
       if (result.access) {
-        setLocation("/profile");
+        setLocation("/garage");
       } else {
         setError(JSON.parse(result.message).error);
       }
