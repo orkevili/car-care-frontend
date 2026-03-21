@@ -165,6 +165,7 @@ function Garage() {
     };
 
     const handleSelectVehicle = () => {
+        localStorage.setItem("activeVehicleName", `${formData.make} ${formData.model}`);
         setShowActionModal(false);
         setLocation(`/vehicles/${formData.id}`);
     };
