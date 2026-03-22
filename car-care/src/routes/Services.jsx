@@ -114,12 +114,16 @@ function Services() {
     }
 
 
-    const tableHeaders = ["Title", "Odometer", "Date", "Cost", "Description"];
-
+    const tableHeaders = ["Title", "Description", "Odometer", "Cost", "Date"];
+    let totalCost = 0;
+    for(let i=0; i < services.length; i++) {
+        totalCost += services[i].labor_cost;
+    }
     return (
         <Container>
             <Title>Service History</Title>
             <SmallTitle>{vehicleName}</SmallTitle>
+            <b>Total cost</b>{totalCost} Ft 
             {vehicleId && <StyledButton onClick={handleAddNew}><FiPlus /></StyledButton>}
             {loading ? (
                 <Loader />
@@ -135,10 +139,10 @@ function Services() {
                             services.map((event) => (
                                 <Tr key={event.id}>
                                     <Td>{event.title}</Td>
-                                    <Td>{event.odometer} km</Td>
-                                    <Td>{event.date}</Td>
-                                    <Td>{event.labor_cost} HUF</Td>
                                     <Td>{event.description}</Td>
+                                    <Td>{event.odometer} km</Td>
+                                    <Td>{event.labor_cost} HUF</Td>
+                                    <Td>{event.date}</Td>
                                     <Td>
                                         <ActionButton onClick={() => handleEdit(event)}><FiEdit /></ActionButton>
                                         <ActionButton onClick={() => handleDelete(event)}><FiTrash /></ActionButton>

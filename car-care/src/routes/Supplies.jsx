@@ -106,11 +106,16 @@
         <Loader />
 
         const tableHeaders = ["Name", "Article number", "Quantity", "Price"];
+        let totalCost = 0;
+        for(let i=0; i < parts.length; i++) {
+            totalCost += parts[i].price*parts[i].quantity;
+        }
 
         return (
             <Container>
                 <Title>Supplies</Title>
                 <SmallTitle>{vehicleName}</SmallTitle>
+                <b>Total</b>{totalCost} Ft
                 {vehicleId && <StyledButton onClick={handleAddNew}><FiPlus /></StyledButton>}
                 {loading ? (
                     <Loader />
