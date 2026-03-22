@@ -87,19 +87,12 @@ function Services() {
     const [formData, setFormData] = useState({
         id: null,
         title: "",
-        odometer: "",
-        date: "",
-        labor_cost: "",
         description: "",
+        date: "",
+        odometer: "",
+        labor_cost: "",
         vehicle_id: ""
     })
-    
-    const pageTitle = (
-        <>
-            <Title>Service History</Title>
-            <SmallTitle>{vehicleName}</SmallTitle>
-        </>
-    )
 
     const fetchAllData = async () => {
         try {
@@ -135,7 +128,7 @@ function Services() {
     }
 
     const resetForm = () => {
-        setFormData({id: null, title: "", odometer: "", date: "", labor_cost: "", description: "", vehicle_id: ""})
+        setFormData({id: null, title: "", description: "",  date: "", odometer: "", labor_cost: "", vehicle_id: ""})
     }
 
     const handleAddNew = () => {
@@ -172,7 +165,7 @@ function Services() {
         }
         try {
             if (formData.id) {
-                await ServiceAPI.update(formData.id, vehicleId, formData)
+                await ServiceAPI.update(formData.id, formData)
             } else {
                 await ServiceAPI.create(vehicleId, formData)
             }
@@ -189,7 +182,8 @@ function Services() {
 
     return (
         <Container>
-            {pageTitle}
+            <Title>Service History</Title>
+            <SmallTitle>{vehicleName}</SmallTitle>
             {vehicleId && <StyledButton onClick={handleAddNew}><FiPlus /></StyledButton>}
             {loading ? (
                 <Loader />

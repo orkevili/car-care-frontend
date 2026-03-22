@@ -232,6 +232,7 @@ function Garage() {
                             type="date"
                             name="purchase_date"
                             placeholder="Puchase date"
+                            defaultValue={new Date()}
                             value={formData.purchase_date}
                             onChange={handleInputChange}
                         />

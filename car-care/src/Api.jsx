@@ -47,14 +47,14 @@ export const VehicleAPI = {
     getAll: () => apiClient.get('/vehicles/'),
     create: (newCar) => apiClient.post('/vehicles/', { newCar }),
     delete: (id) => apiClient.delete(`/vehicles/${id}/`),
-    update: (id, updatedCar) => apiClient.put(`/vehicles/${id}/`, updatedCar)
+    update: (id, updatedCar) => apiClient.patch(`/vehicles/${id}/`, updatedCar)
 };
 
 export const ServiceAPI = {
     getAll: () => apiClient.get('/services/'),
     getById: (id) => apiClient.get(`vehicles/${id}/services/`),
-    create: (vehicle_id, newService) => apiClient.post(`vehicles/${vehicle_id}/services/`, { newService }),
-    update: (service_id, updatedService) => apiClient.put(`services/${service_id}/`, { updatedService }),
+    create: (vehicle_id, newService) => apiClient.post(`vehicles/${vehicle_id}/services/`, newService),
+    update: (service_id, updatedService) => apiClient.patch(`services/${service_id}/`, updatedService),
     delete: (service_id) => apiClient.delete(`/services/${service_id}/`)
 }
 
