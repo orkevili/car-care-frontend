@@ -136,25 +136,23 @@ function Services() {
         setShowEditModal(true)
     }
 
-    const handleEdit = (serviceData) => {
-        const editedData = {
-            ...serviceData,
-        }
-        setFormData(editedData)
-        setShowEditModal(true)
+    const handleEdit = (service) => {
+        setFormData(service);
+        setShowEditModal(true);
+        console.log(service)
     }
 
-    const handleDelete = async (formData) => {
-        if (!window.confirm(`Are you sure to delete ${formData.title} service entry?`)) {
+    const handleDelete = async (service) => {
+        if (!window.confirm(`Are you sure to delete ${service.title} service entry?`)) {
             return;
         }
         try {
-            await ServiceAPI.delete(formData.id, vehicleId);
+            await ServiceAPI.delete(service.id);
             fetchAllData();
             resetForm();
         } catch (error) {
             console.error(error);
-                        toast.error(`Error during deleting ${formData.title} service entry.`)
+                        toast.error(`Error during deleting ${service.title} service entry.`)
         }
     };
     

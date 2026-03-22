@@ -6,6 +6,7 @@ import { useLocation } from "wouter"
 import Title from "../components/Title"
 import Loader from "../components/Loading"
 import { toast } from "react-toastify"
+import logo from '../assets/logo.png'; 
 
 const Container = styled.div`
     height: 100vh;
@@ -117,36 +118,37 @@ function Auth() {
   }
 
   return (
-        <Container>
-          <Title>{registerForm ? "Register" : "Login"}</Title>
-          <Form onSubmit={handleSubmit}>          
-            <Input 
-              type="text" 
-              placeholder='username' 
-              name='username'
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-            <Input 
-              type="password" 
-              placeholder='password' 
-              name='password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <div className="buttonContainer">
-              <div className="smallContainer">
-                <StyledButton type='submit'>{!registerForm ? "Login" : "Register"}</StyledButton>
-                {!registerForm && <StyledButton type="button" onClick={() => toast.success("Password reminder not implemented, yet")}>Forgot password</StyledButton>}
-              </div>
-              <Button type="button" onClick={ () => setRegisterForm(prev => !prev) }>
-                  {registerForm ? "Already have an account? Login here!" : "Don't have an account yet? Register here!"}
-              </Button>
-            </div>        
-          </Form>
-        </Container>
+    <Container>
+      <img src={logo} width={120} height={120}></img>
+      <Title>{registerForm ? "Register" : "Login"}</Title>
+      <Form onSubmit={handleSubmit}>          
+        <Input 
+          type="text" 
+          placeholder='username' 
+          name='username'
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <Input 
+          type="password" 
+          placeholder='password' 
+          name='password'
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <div className="buttonContainer">
+          <div className="smallContainer">
+            <StyledButton type='submit'>{!registerForm ? "Login" : "Register"}</StyledButton>
+            {!registerForm && <StyledButton type="button" onClick={() => toast.success("Password reminder not implemented, yet")}>Forgot password</StyledButton>}
+          </div>
+          <Button type="button" onClick={ () => setRegisterForm(prev => !prev) }>
+              {registerForm ? "Already have an account? Login here!" : "Don't have an account yet? Register here!"}
+          </Button>
+        </div>        
+      </Form>
+    </Container>
   )
 }
 
