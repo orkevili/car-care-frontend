@@ -1,4 +1,4 @@
-import { Redirect, Route, Switch, useLocation } from 'wouter'
+import { Redirect, Route, Switch } from 'wouter'
 import { AuthContext } from './components/AuthContext'
 import Nav from './components/Nav'
 import Auth from './routes/Auth'
@@ -23,6 +23,14 @@ function App() {
     return <ErrorPage />
   }
 
+  const requireAuth = (children, fallback = '/login') => {
+    return user ? children : <Redirect to={fallback} />; 
+  };
+
+  const requireGuest = (children, fallback = '/garage') => {
+    return user ? <Redirect to={fallback} /> : children; 
+  };
+
   return (
     <>
     {user && <Nav user={user} logout={logout} />} 
@@ -44,26 +52,14 @@ function App() {
     />
     <Switch>
     <Route path="/" >
-      {user ? <Redirect to='/garage' /> : <Redirect to='/login' />}
+      <Redirect to={user ? '/garage' : '/login'} />
     </Route>
-    <Route path="/login">
-      {user ? <Redirect to='/profile' /> : <Auth />}
-    </Route>
-    <Route path="/register">
-      {user ? <Redirect to='/profile' /> : <Auth />}
-    </Route>
-    <Route path="/profile">
-      {user ? <Profile user={user} /> : <Redirect to='/login' />}
-    </Route>
-    <Route path="/garage">
-      {user ? <Garage /> : <Redirect to='/login' />}
-    </Route>
-    <Route path="/vehicles/:vehicleId?">
-      {user ? <Services /> : <Redirect to='/' />}
-    </Route>
-    <Route path="/supplies">
-      {user ? <Supplies /> : <Redirect to='/login' />}
-    </Route>
+    <Route path="/login">{requireGuest(<Auth />)}</Route>
+    <Route path="/register">{requireGuest(<Auth />)}</Route>
+    <Route path="/profile">{requireAuth(<Profile user={user} />)}</Route>
+    <Route path="/garage">{requireAuth(<Garage />)}</Route>
+    <Route path="/services">{requireAuth(<Services />)}</Route>
+    <Route path="/supplies">{requireAuth(<Supplies />)}</Route>
     </Switch>
     </>
   )

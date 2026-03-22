@@ -164,7 +164,7 @@ function Garage() {
         localStorage.setItem("activeVehicleName", `${formData.make} ${formData.model}`);
         localStorage.setItem("activeVehicleId", formData.id);
         setShowActionModal(false);
-        setLocation(`/vehicles/${formData.id}`);
+        setLocation(`/services`);
     };
     
     return (

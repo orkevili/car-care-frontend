@@ -106,7 +106,6 @@ const MenuGroup = styled.div`
     }
 `
 
-const vehicleId = localStorage.getItem("activeVehicleId");
 
 function Nav({user, logout}) {
     const [, setLocation] = useLocation()
@@ -126,7 +125,7 @@ function Nav({user, logout}) {
             <LogoutBtn onClick={handleLogout}>{user}<FiLogOut /></LogoutBtn>
             <MenuGroup>
                 <StyledLink to='/garage'><Image src={carIcon} /><span>Garage</span></StyledLink>
-                <StyledLink to={`/vehicles/`+vehicleId}><Image src={wrenchIcon} /><span>Services</span></StyledLink>
+                <StyledLink to='/services'><Image src={wrenchIcon} /><span>Services</span></StyledLink>
                 <StyledLink to='/supplies'><Image src={suppliesIcon} /><span>Supplies</span></StyledLink>
             </MenuGroup>
         

@@ -76,19 +76,6 @@ function Auth() {
 
   const { login, message, user, loading, register } = useContext(AuthContext);
   const [, setLocation] = useLocation();
-
-  useEffect(() => {
-    toast(message, { type: "info" })
-    if (!loading && user) {
-      setLocation("/login/")
-    }
-    if (registerForm) {
-      setLocation("/register/")
-    } else {
-      setLocation("/login/")
-    }
-  }, [user, loading, registerForm]);
-
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,6 +85,7 @@ function Auth() {
       if (result.access) {
         setLocation("/garage");
       } else {
+        toast.error("Invalid username or password!");
         setError(JSON.parse(result.message).error);
       }
     } else {
@@ -141,7 +129,7 @@ function Auth() {
         <div className="buttonContainer">
           <div className="smallContainer">
             <StyledButton type='submit'>{!registerForm ? "Login" : "Register"}</StyledButton>
-            {!registerForm && <StyledButton type="button" onClick={() => toast.success("Password reminder not implemented, yet")}>Forgot password</StyledButton>}
+            {!registerForm && <StyledButton type="button" onClick={() => toast.info("Password reminder not implemented, yet")}>Forgot password</StyledButton>}
           </div>
           <Button type="button" onClick={ () => setRegisterForm(prev => !prev) }>
               {registerForm ? "Already have an account? Login here!" : "Don't have an account yet? Register here!"}
