@@ -54,8 +54,8 @@ export const ServiceAPI = {
     getAll: () => apiClient.get('/services/'),
     getById: (id) => apiClient.get(`vehicles/${id}/services/`),
     create: (vehicle_id, newService) => apiClient.post(`vehicles/${vehicle_id}/services/`, { newService }),
-    update: (service_id, vehicle_id, updatedService) => apiClient.post(`vehicles/${vehicle_id}/${service_id}/`, {updatedService}),
-    delete: (service_id, vehicle_id) => apiClient.delete(`vehicles/${vehicle_id}/${service_id}/`)
+    update: (service_id, updatedService) => apiClient.put(`services/${service_id}/`, { updatedService }),
+    delete: (service_id) => apiClient.delete(`/services/${service_id}/`)
 }
 
 export default apiClient;

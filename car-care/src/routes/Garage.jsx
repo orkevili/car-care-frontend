@@ -109,7 +109,6 @@ function Garage() {
             return;
         }
         try {
-            console.log(formData);
             if (formData.id) {
                 await VehicleAPI.update(formData.id, formData);
                 toast.success("Vehicle updated!");

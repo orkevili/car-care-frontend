@@ -5,7 +5,7 @@ import StyledButton from "../components/StyledButton";
 import Title, { SmallTitle } from "../components/Title";
 import Loader from "../components/Loading";
 import styled from "styled-components";
-import { useRoute } from "wouter";
+import { useLocation, useRoute } from "wouter";
 import { FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ActionButton, ButtonGroup, CancelButton, ModalContent, ModalInput, ModalOverlay, ModalTitle } from "../components/Modal";
@@ -79,16 +79,17 @@ function Services() {
     const [services, setServices] = useState([])
     const [loading, setLoading] = useState(true)
     const [showEditModal, setShowEditModal] = useState(false)
+    const [ , setLocation] = useLocation()
     const [match, params] = useRoute("/vehicles/:vehicleId")
     const vehicleId = params ? params.vehicleId : null;
     const vehicleName = localStorage.getItem("activeVehicleName");
 
     const [formData, setFormData] = useState({
         id: null,
-        name: "",
+        title: "",
         odometer: "",
         date: "",
-        cost: "",
+        labor_cost: "",
         description: "",
         vehicle_id: ""
     })
@@ -134,7 +135,7 @@ function Services() {
     }
 
     const resetForm = () => {
-        setFormData({id: null, name: "", odometer: "", date: "", cost: "", description: "", vehicle_id: ""})
+        setFormData({id: null, title: "", odometer: "", date: "", labor_cost: "", description: "", vehicle_id: ""})
     }
 
     const handleAddNew = () => {
@@ -151,7 +152,7 @@ function Services() {
     }
 
     const handleDelete = async (formData) => {
-        if (!window.confirm(`Are you sure to delete ${formData.name} service entry?`)) {
+        if (!window.confirm(`Are you sure to delete ${formData.title} service entry?`)) {
             return;
         }
         try {
@@ -160,12 +161,12 @@ function Services() {
             resetForm();
         } catch (error) {
             console.error(error);
-                        toast.error(`Error during deleting ${formData.name} service entry.`)
+                        toast.error(`Error during deleting ${formData.title} service entry.`)
         }
     };
     
     const handleSave = async () => {
-        if (!formData.name || !formData.odometer || !formData.date || !formData.cost || !formData.description) {
+        if (!formData.title || !formData.odometer || !formData.date || !formData.labor_cost || !formData.description) {
             toast.warn("Name, odometer, date and cost are required!")
             return
         }
@@ -206,7 +207,7 @@ function Services() {
                                     <Td>{event.title}</Td>
                                     <Td>{event.odometer} km</Td>
                                     <Td>{event.date}</Td>
-                                    <Td>{event.cost} HUF</Td>
+                                    <Td>{event.labor_cost} HUF</Td>
                                     <Td>{event.description}</Td>
                                     <Td>
                                         <ActionButton onClick={() => handleEdit(event)}><FiEdit /></ActionButton>
@@ -229,9 +230,9 @@ function Services() {
                         <ModalTitle>{formData.id ? `Edit service` : 'Add new service'}</ModalTitle>
                         <ModalInput
                             type="text"
-                            name="name"
-                            placeholder="Name"
-                            value={formData.name}
+                            name="title"
+                            placeholder="Title"
+                            value={formData.title}
                             onChange={handleInputChange}
                         />
                         <ModalInput
@@ -242,7 +243,7 @@ function Services() {
                             onChange={handleInputChange}
                         />
                          <ModalInput
-                            type="text"
+                            type="date"
                             name="date"
                             placeholder="Date"
                             value={formData.date}
@@ -251,6 +252,7 @@ function Services() {
                         <ModalInput
                             type="number"
                             step={100}
+                            min={0}
                             name="odometer"
                             placeholder="Odometer"
                             value={formData.odometer}
@@ -258,10 +260,11 @@ function Services() {
                         />
                         <ModalInput
                             type="number"
-                            name="cost"
+                            name="labor_cost"
                             step={1000}
+                            min={0}
                             placeholder="Cost"
-                            value={formData.cost}
+                            value={formData.labor_cost}
                             onChange={handleInputChange}
                         />
                         <ModalInput 
