@@ -60,7 +60,7 @@ const CancelButton = styled(StyledButton)`
     border: 1px solid #ff6b6b;
     color: #ff6b6b;
     &:hover {
-        background-color: rgba(255, 107, 107, 0.1);
+        background-color: rgb(255, 107, 107);
         box-shadow: none;
     }
 `;
@@ -79,13 +79,14 @@ const ActionButton = styled(StyledButton)`
 `;
 
 const DeleteButton = styled(ActionButton)`
-    background-color: transparent;
-    border: 1px solid #ff6b6b;
-    color: #ff6b6b;
-    &:hover {
-        background-color: rgba(255, 107, 107, 0.1);
-        box-shadow: none;
+  &:hover {
+    background-color: rgb(180, 40, 60);
+    border-color: rgb(220, 60, 80);   
+    & > svg {
+      color: rgb(28, 33, 42); 
     }
+  }
 `;
+
 
 export {ModalContent, ModalInput, ModalOverlay, ModalTitle, DeleteButton, ActionButton, ActionModalContent, CancelButton, ButtonGroup}

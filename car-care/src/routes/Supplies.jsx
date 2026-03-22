@@ -2,7 +2,7 @@
     import { Table, Td, Tr } from "../components/StyledTable"
     import Title, { SmallTitle } from "../components/Title";
     import StyledButton from "../components/StyledButton";
-    import { ActionButton, ButtonGroup, CancelButton, ModalContent, ModalInput, ModalOverlay, ModalTitle } from "../components/Modal";
+    import { ActionButton, DeleteButton, ButtonGroup, CancelButton, ModalContent, ModalInput, ModalOverlay, ModalTitle } from "../components/Modal";
     import Loader from "../components/Loading";
     import { FiEdit, FiPlus, FiTrash } from "react-icons/fi";
     import { useState, useEffect } from "react";
@@ -105,7 +105,7 @@
 
         <Loader />
 
-        const tableHeaders = ["Name", "Article number", "Quantity", "Price"];
+        const tableHeaders = ["Name", "Article number", "Quantity", "Unit price"];
         let totalCost = 0;
         for(let i=0; i < parts.length; i++) {
             totalCost += parts[i].price*parts[i].quantity;
@@ -115,8 +115,8 @@
             <Container>
                 <Title>Supplies</Title>
                 <SmallTitle>{vehicleName}</SmallTitle>
-                <b>Total</b>{totalCost} Ft
-                {vehicleId && <StyledButton onClick={handleAddNew}><FiPlus /></StyledButton>}
+                <b>Total cost</b>{totalCost} Ft
+                {vehicleId && <StyledButton onClick={handleAddNew}><FiPlus />Add</StyledButton>}
                 {loading ? (
                     <Loader />
                 ) : (
@@ -137,7 +137,7 @@
                                         
                                         <Td>
                                             <ActionButton onClick={() => handleEdit(part)}><FiEdit /></ActionButton>
-                                            <ActionButton onClick={() => handleDelete(part)}><FiTrash /></ActionButton>
+                                            <DeleteButton onClick={() => handleDelete(part)}><FiTrash /></DeleteButton>
                                             </Td>
                                     </Tr>
                                     

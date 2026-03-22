@@ -170,7 +170,7 @@ function Garage() {
     return (
         <Container>
             <Title>Select a vehicle</Title>
-            <StyledButton onClick={handleAddNew}><FiPlus /></StyledButton>       
+            <StyledButton onClick={handleAddNew}><FiPlus />Add</StyledButton>       
             {loading ? (
                 <Loader />
             ) : (
@@ -179,9 +179,9 @@ function Garage() {
                         vehicles.map((vehicle) => (
                             <Card key={vehicle.id} onClick={() => handleCardClick(vehicle)}>
                                 <CardTitle>{vehicle.make} {vehicle.model}</CardTitle>
-                                {vehicle.license_plate ? <Description>Plate<br/><span>{vehicle.license_plate}</span></Description> : <></>}
+                                {vehicle.license_plate && <Description>Plate<br/><span>{vehicle.license_plate}</span></Description>}
                                 <Description>Year<br/><span>{vehicle.year}</span></Description>
-                                <Description>Fuel <br/><span>{vehicle.fuel}</span></Description>
+                                {vehicle.fuel &&<Description>Fuel <br/><span>{vehicle.fuel}</span></Description>}
                             </Card>
                         ))
                     ) : (

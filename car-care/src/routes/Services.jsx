@@ -7,7 +7,7 @@ import Loader from "../components/Loading";
 import { Table, Td, Tr } from "../components/StyledTable"
 import { FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { ActionButton, ButtonGroup, CancelButton, ModalContent, ModalInput, ModalOverlay, ModalTitle } from "../components/Modal";
+import { ActionButton, ButtonGroup, CancelButton, DeleteButton, ModalContent, ModalInput, ModalOverlay, ModalTitle } from "../components/Modal";
 import { useLocation } from "wouter";
 
 
@@ -64,8 +64,13 @@ function Services() {
         })
     }
 
+    const getTodayDate = () => {
+        const today = new Date();
+        return today.toISOString().split("T")[0];
+    }
+
     const resetForm = () => {
-        setFormData({id: null, title: "", description: "",  date: "", odometer: "", labor_cost: "", vehicle_id: ""})
+        setFormData({id: null, title: "", description: "",  date: getTodayDate(), odometer: "", labor_cost: "", vehicle_id: ""})
     }
 
     const handleAddNew = () => {
@@ -124,7 +129,7 @@ function Services() {
             <Title>Service History</Title>
             <SmallTitle>{vehicleName}</SmallTitle>
             <b>Total cost</b>{totalCost} Ft 
-            {vehicleId && <StyledButton onClick={handleAddNew}><FiPlus /></StyledButton>}
+            {vehicleId && <StyledButton onClick={handleAddNew}><FiPlus />Add</StyledButton>}
             {loading ? (
                 <Loader />
             ) : (
@@ -145,7 +150,7 @@ function Services() {
                                     <Td>{event.date}</Td>
                                     <Td>
                                         <ActionButton onClick={() => handleEdit(event)}><FiEdit /></ActionButton>
-                                        <ActionButton onClick={() => handleDelete(event)}><FiTrash /></ActionButton>
+                                        <DeleteButton onClick={() => handleDelete(event)}><FiTrash /></DeleteButton>
                                         </Td>
                                 </Tr>
                                 
