@@ -56,6 +56,13 @@ export const ServiceAPI = {
     create: (vehicle_id, newService) => apiClient.post(`vehicles/${vehicle_id}/services/`, newService),
     update: (service_id, updatedService) => apiClient.patch(`services/${service_id}/`, updatedService),
     delete: (service_id) => apiClient.delete(`/services/${service_id}/`)
-}
+};
+
+export const PartAPI = {
+    getById: (vehicle_id) => apiClient.get(`vehicles/${vehicle_id}/supplies/`),
+    create: (vehicle_id, newPart) => apiClient.post(`vehicles/${vehicle_id}/supplies`, newPart),
+    update: (partId, updatedPart) => apiClient.patch(`supplies/${partId}`, updatedPart),
+    delete: (partId) => apiClient.delete(`supplies/${partId}`)
+};
 
 export default apiClient;
