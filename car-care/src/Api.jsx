@@ -47,7 +47,7 @@ export const VehicleAPI = {
     getAll: () => apiClient.get('/vehicles/'),
     create: (newCar) => apiClient.post('/vehicles/', { newCar }),
     delete: (id) => apiClient.delete(`/vehicles/${id}/`),
-    update: (id, updatedCar) => apiClient.put(`/${id}`, updatedCar)
+    update: (id, updatedCar) => apiClient.put(`/vehicles/${id}/`, updatedCar)
 };
 
 export const ServiceAPI = {

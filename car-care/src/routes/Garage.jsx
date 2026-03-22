@@ -66,7 +66,7 @@ function Garage() {
         id: null,
         make: "",
         model: "",
-        plate: "",
+        license_plate: "",
         year: "",
         fuel: "",
         purchase_date: "",
@@ -128,7 +128,7 @@ function Garage() {
     };
 
     const resetForm = () => {
-        setFormData({ id: null, make: "", model: "", plate: "", year: "", fuel: "", purchase_date: "", purchase_price: "", purchase_odometer: ""});
+        setFormData({ id: null, make: "", model: "", license_plate: "", year: "", fuel: "", purchase_date: "", purchase_price: "", purchase_odometer: ""});
     };
     
     const handleAddNew = () => {
@@ -180,6 +180,7 @@ function Garage() {
                         vehicles.map((vehicle) => (
                             <Card key={vehicle.id} onClick={() => handleCardClick(vehicle)}>
                                 <CardTitle>{vehicle.make} {vehicle.model}</CardTitle>
+                                {vehicle.license_plate ? <Description>Plate<br/><span>{vehicle.license_plate}</span></Description> : <></>}
                                 <Description>Year<br/><span>{vehicle.year}</span></Description>
                                 <Description>Fuel <br/><span>{vehicle.fuel}</span></Description>
                             </Card>
@@ -209,9 +210,9 @@ function Garage() {
                         />
                         <ModalInput 
                             type="text"
-                            name="plate"
+                            name="license_plate"
                             placeholder="License plate ASD-123"
-                            value={formData.plate}
+                            value={formData.license_plate}
                             onChange={handleInputChange}
                         />
                         <ModalInput 
