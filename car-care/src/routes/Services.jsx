@@ -78,10 +78,10 @@ const Td = styled.td`
 function Services() {
     const [services, setServices] = useState([])
     const [loading, setLoading] = useState(true)
-    const [vehicleMap, setVehicleMap] = useState({})
-    const [match, params] = useRoute("/services/:vehicleId")
     const [showEditModal, setShowEditModal] = useState(false)
-    const [vehicleId, setVehicleId] = useState(null)
+    const [match, params] = useRoute("/vehicles/:vehicleId")
+    const vehicleId = params ? params.vehicleId : null;
+    const vehicleName = localStorage.getItem("activeVehicleName");
 
     const [formData, setFormData] = useState({
         id: null,
@@ -92,61 +92,39 @@ function Services() {
         description: "",
         vehicle_id: ""
     })
-
     
-    useEffect(() => {
-        setVehicleId(params ? params.vehicleId : null)
-    }, [params])
-    
-    const pageTitle = vehicleId ? <><Title>Service history</Title><SmallTitle>{vehicleMap[vehicleId]}</SmallTitle></>: <Title>All service history</Title>
+    const pageTitle = (
+        <>
+            <Title>Service History</Title>
+            <SmallTitle>{vehicleName}</SmallTitle>
+        </>
+    )
 
     const fetchAllData = async () => {
-        let serviceResponse;
         try {
             setLoading(true);                
-            const vehicleResponse = await VehicleAPI.getAll();
-            const rawVehicleData = vehicleResponse.data; 
-            const map = {};
-            if (rawVehicleData) {
-                const vehicleArray = Object.entries(rawVehicleData).map(([key, value]) => ({ id: key, ...value }));
-                vehicleArray.forEach(v => {
-                    map[v.id] = `${v.brand} ${v.model}`;
-                });
-            }
-            setVehicleMap(map);
-            
-            if (vehicleId) {
-                serviceResponse = await ServiceAPI.getById(vehicleId);
-            } else {
-                serviceResponse = await ServiceAPI.getAll(); 
-            }
-            
-            const rawServiceData = serviceResponse.data; 
-            console.log(rawServiceData) ;
-            
-            if (rawServiceData) {
-                const servicesArray = Object.entries(rawServiceData).map(([key, value]) => ({
-                    id: key, 
-                    vehicle_id: String(value.vehicle_id), 
-                    ...value
-                }));
-                setServices(servicesArray);
+            const serviceResponse = await ServiceAPI.getById(vehicleId);
+            if (Array.isArray(serviceResponse.data)) {
+                setServices(serviceResponse.data);
             } else {
                 setServices([]);
             }
+            
         } catch (error) {
             console.error("Error requesting data:", error);
             toast.error("Couldn't load the data.")
             setServices([]);
-            setVehicleMap({});
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchAllData()
+        if (vehicleId) {
+            fetchAllData()
+        }
     }, [vehicleId]); 
+
 
     const handleInputChange = (e) => {
         setFormData({
@@ -206,9 +184,7 @@ function Services() {
         }
     }
 
-    const tableHeaders = [
-        `${!vehicleId ? "Vehicle" : ""}`, "Service", "Odometer", "Date", "Cost", "Description"
-    ];
+    const tableHeaders = ["Title", "Odometer", "Date", "Cost", "Description"];
 
     return (
         <Container>
@@ -227,8 +203,7 @@ function Services() {
                         {services.length > 0 ? (
                             services.map((event) => (
                                 <Tr key={event.id}>
-                                    {!vehicleId ? <Td>{vehicleMap[event.vehicle_id] || `ID: ${event.vehicle_id}`}</Td> : <Td></Td>}
-                                    <Td>{event.name}</Td>
+                                    <Td>{event.title}</Td>
                                     <Td>{event.odometer} km</Td>
                                     <Td>{event.date}</Td>
                                     <Td>{event.cost} HUF</Td>

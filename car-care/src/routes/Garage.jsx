@@ -64,7 +64,7 @@ function Garage() {
     const [showActionModal, setShowActionModal] = useState(false); 
     const [formData, setFormData] = useState({
         id: null,
-        brand: "",
+        make: "",
         model: "",
         plate: "",
         year: "",
@@ -104,20 +104,22 @@ function Garage() {
     
     
     const handleSave = async () => {
-        if (!formData.brand || !formData.model || !formData.year ) {
-            toast.warning("Make, model and year are required!")
+        if (!formData.make || !formData.model || !formData.year ) {
+            toast.warn("Make, model and year are required!")
             return;
         }
         try {
+            console.log(formData);
             if (formData.id) {
-                await VehicleAPI.update(formData.id, formData)
+                await VehicleAPI.update(formData.id, formData);
+                toast.success("Vehicle updated!");
             } else {
-                await VehicleAPI.create(formData)
+                await VehicleAPI.create(formData);
+                toast.success("Vehicle added!");
             }
-            
-            setShowEditModal(false)
-            resetForm()
-            fetchVehicles()
+            setShowEditModal(false);
+            resetForm();
+            fetchVehicles();
             
         } catch (error) {
             alert("Error during save.");
@@ -126,7 +128,7 @@ function Garage() {
     };
 
     const resetForm = () => {
-        setFormData({ id: null, brand: "", model: "", year: "", fuel: ""});
+        setFormData({ id: null, make: "", model: "", plate: "", year: "", fuel: "", purchase_date: "", purchase_price: "", purchase_odometer: ""});
     };
     
     const handleAddNew = () => {
@@ -144,13 +146,8 @@ function Garage() {
         setShowEditModal(true);
     };
 
-    const handleViewServices = () => {
-        setShowActionModal(false);
-        setLocation(`/services/${formData.id}`); 
-    };
-
     const handleDelete = async () => {
-        if (!window.confirm(`Are you sure to delete ${formData.brand} ${formData.model} vehicle?`)) {
+        if (!window.confirm(`Are you sure to delete ${formData.make} ${formData.model} vehicle?`)) {
             return;
         }
         try {
@@ -160,12 +157,13 @@ function Garage() {
             resetForm();
         } catch (error) {
             console.error(error);
-            toast.error(`Error during deleting ${formData.brand} ${formData.model} vehicle.`)
+            toast.error(`Error during deleting ${formData.make} ${formData.model} vehicle.`)
         }
     };
 
     const handleSelectVehicle = () => {
         localStorage.setItem("activeVehicleName", `${formData.make} ${formData.model}`);
+        localStorage.setItem("activeVehicleId", formData.id);
         setShowActionModal(false);
         setLocation(`/vehicles/${formData.id}`);
     };
@@ -197,9 +195,9 @@ function Garage() {
                         <ModalTitle>{formData.id ? 'Vehicle edit' : 'Add new vehicle'}</ModalTitle>
                         <ModalInput 
                             type="text" 
-                            name="brand" 
+                            name="make" 
                             placeholder="Make (Volkswagen)" 
-                            value={formData.brand}
+                            value={formData.make}
                             onChange={handleInputChange}
                         />
                         <ModalInput 
@@ -265,9 +263,8 @@ function Garage() {
             {showActionModal && formData.id && (
                 <ModalOverlay onClick={() => setShowActionModal(false)}> 
                     <ActionModalContent onClick={(e) => e.stopPropagation()}>
-                        <ModalTitle>Operations with the {formData.brand}</ModalTitle>
+                        <ModalTitle>Operations with the {formData.make}</ModalTitle>
                         <ActionButton onClick={handleSelectVehicle}>Select</ActionButton>
-                        <ActionButton onClick={handleViewServices}>Service history</ActionButton>
                         <ActionButton onClick={handleEdit}>Edit vehicle</ActionButton>
                         <DeleteButton onClick={handleDelete}>Delete vehichle</DeleteButton>
                         <CancelButton onClick={() => { setShowActionModal(false); resetForm(); }}>Close</CancelButton>

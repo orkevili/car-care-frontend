@@ -46,8 +46,8 @@ export const AuthAPI = {
 export const VehicleAPI = {
     getAll: () => apiClient.get('/vehicles/'),
     create: (newCar) => apiClient.post('/vehicles/', { newCar }),
-    delete: (id) => apiClient.delete(`/${id}`),
-    update: (id, newCar) => apiClient.post(`/${id}`, { newCar })
+    delete: (id) => apiClient.delete(`/vehicles/${id}/`),
+    update: (id, updatedCar) => apiClient.put(`/${id}`, updatedCar)
 };
 
 export const ServiceAPI = {
