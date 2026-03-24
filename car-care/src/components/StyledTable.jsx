@@ -10,6 +10,9 @@ export const Table = styled.table`
         border-bottom: 2px solid rgba(20, 97, 97, 1);
         font-weight: bold;
     }
+    &::selection {
+        background-color: transparent;
+    }
     @media (max-width: 900px) {
         & > thead {
             display: none;
