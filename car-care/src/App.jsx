@@ -11,6 +11,7 @@ import './App.css'
 import { useContext } from 'react'
 import Loader from './components/Loading'
 import { ToastContainer } from 'react-toastify'
+import Summary from './routes/Summary'
 
 function App() {
   const { logout, user, loading, serverDown } = useContext(AuthContext)
@@ -60,6 +61,7 @@ function App() {
     <Route path="/garage">{requireAuth(<Garage />)}</Route>
     <Route path="/services">{requireAuth(<Services />)}</Route>
     <Route path="/supplies">{requireAuth(<Supplies />)}</Route>
+    <Route path="/summary">{requireAuth(<Summary />)}</Route>
     </Switch>
     </>
   )

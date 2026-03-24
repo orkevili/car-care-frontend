@@ -127,6 +127,7 @@ function Nav({user, logout}) {
                 <StyledLink to='/garage'><Image src={carIcon} /><span>Garage</span></StyledLink>
                 <StyledLink to='/services'><Image src={wrenchIcon} /><span>Services</span></StyledLink>
                 <StyledLink to='/supplies'><Image src={suppliesIcon} /><span>Supplies</span></StyledLink>
+                <StyledLink to='/summary'><Image src={suppliesIcon} /><span>Summary</span></StyledLink>
             </MenuGroup>
         
         </Navbar>
