@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, act } from "react";
 import { PartAPI, ServiceAPI } from "../Api"; 
 import Container from "../components/Container";
 import StyledButton from "../components/StyledButton";
@@ -9,17 +9,14 @@ import { FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ActionButton, ButtonGroup, CancelButton, DeleteButton, ModalContent, ModalInput, ModalSelector, ModalSelect, ModalOverlay, ModalTitle, ModalOption, ModalList, ModalLi } from "../components/Modal";
 import { useLocation } from "wouter";
+import { VehicleContext } from "../components/VehicleContext";
 
 
 function Services() {
     const [ ,setLocation] = useLocation();
-    const [services, setServices] = useState([]);
-    const [parts, setParts] = useState([]);
+    const [sortOrder, setSortOrder] = useState("desc");
     const [currentPart, setCurrentPart] = useState({part_id: "", quantity: 1});
-    const [loading, setLoading] = useState(true);
     const [showEditModal, setShowEditModal] = useState(false);
-    const vehicleId = localStorage.getItem("activeVehicleId");
-    const vehicleName = localStorage.getItem("activeVehicleName");
     const [formData, setFormData] = useState({
         id: null,
         title: "",
@@ -31,6 +28,9 @@ function Services() {
         used_parts: []
     })
 
+    const { activeVehicle, setActiveVehicle, services, setServices, parts, setParts, loading, fetchVehicleData } = useContext(VehicleContext);
+
+
     const getTodayDate = () => {
         const today = new Date();
         return today.toISOString().split("T")[0];
@@ -40,34 +40,6 @@ function Services() {
         setFormData({id: null, title: "", description: "",  date: getTodayDate(), odometer: "", labor_cost: "", vehicle_id: "", used_parts: []});
         setCurrentPart({part_id: "", quantity: 1});
     }
-
-    const fetchAllData = async () => {
-        try {
-            setLoading(true);                
-            const serviceResponse = await ServiceAPI.getById(vehicleId);
-            const partResponse = await PartAPI.getById(vehicleId);
-            if (Array.isArray(serviceResponse.data) && Array.isArray(partResponse.data)) {
-                setServices(serviceResponse.data);
-                setParts(partResponse.data.filter((part, i) => part.quantity > 0));
-            }
-            
-        } catch (error) {
-            console.error("Error requesting data:", error);
-            toast.error("Couldn't load the data.")
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (vehicleId) {
-            fetchAllData()
-        } else {
-            toast.warn("Please select a vehicle!");
-            setLocation('/garage');
-        }
-    }, [vehicleId]); 
-
 
     const handleInputChange = (e) => {
         setFormData({
@@ -92,7 +64,7 @@ function Services() {
         }
         try {
             await ServiceAPI.delete(service.id);
-            fetchAllData();
+            fetchVehicleData(activeVehicle.id);
             resetForm();
         } catch (error) {
             console.error(error);
@@ -102,7 +74,7 @@ function Services() {
     
     const handleSave = async () => {
         if (!formData.title || !formData.odometer || !formData.date || !formData.labor_cost || !formData.description) {
-            toast.warn("Name, odometer, date and cost are required!")
+            toast.warn("Name, odometer, date and cost are required!");
             return
         }
         try {
@@ -111,16 +83,15 @@ function Services() {
             } else {
                 await ServiceAPI.create(vehicleId, formData)
             }
-            setShowEditModal(false)
-            resetForm()
-            fetchAllData()
+            setShowEditModal(false);
+            resetForm();
+            fetchVehicleData(activeVehicle.id);
         } catch(error) {
-            alert("Error during save.")
-            console.error(error)
+            toast.error(`Error during save, ${error}`);
+            console.error(error);
         }
     };
 
-    // Part selector
     const handleAddPart = () => {
         if (!currentPart.part_id) {
             toast.warn("Please select a part first!");
@@ -156,30 +127,49 @@ function Services() {
         setFormData({...formData, used_parts: updatedParts});
     }
 
+    useEffect(() =>{
+        if (!activeVehicle) {
+            toast.warn("Please select a vehicle!");
+            setLocation('/garage');
+        }
+    }, [activeVehicle]);
 
-    const tableHeaders = ["Title", "Description", "Odometer", "Cost", "Date"];
+
     let totalCost = 0;
     for(let i=0; i < services.length; i++) {
         totalCost += services[i].labor_cost;
     }
+
+    const sortedServices = [...services].sort((a, b) => {
+        if (sortOrder === "desc") {
+            return new Date(b.date) - new Date(a.date); 
+        } else {
+            return new Date(a.date) - new Date(b.date);
+        }
+    });
+
     return (
         <Container>
             <Title>Service History</Title>
-            <SmallTitle>{vehicleName}</SmallTitle>
+            <SmallTitle>{`${activeVehicle?.make} ${activeVehicle?.model}`}</SmallTitle>
             <b>Total cost</b>{totalCost} Ft 
-            {vehicleId && <StyledButton onClick={handleAddNew}><FiPlus />Add</StyledButton>}
+            {activeVehicle && <StyledButton onClick={handleAddNew}><FiPlus />Add</StyledButton>}
             {loading ? (
                 <Loader />
             ) : (
                 <Table>
                     <thead>
                         <Tr>
-                            {tableHeaders.map(header => <Td key={header}>{header}</Td>)}
+                            <Td>Title</Td>
+                            <Td>Description</Td>
+                            <Td>Odometer</Td>
+                            <Td>Cost</Td>
+                            <Td onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}>Date {sortOrder === "desc" ? "▼" : "▲"}</Td>
                         </Tr>
                     </thead>
                     <tbody>
-                        {services.length > 0 ? (
-                            services.map((event) => (
+                        {sortedServices.length > 0 ? (
+                            sortedServices.map((event) => (
                                 <Tr key={event.id}>
                                     <Td>{event.title}</Td>
                                     <Td>{event.description}</Td>
@@ -195,7 +185,7 @@ function Services() {
                             ))
                         ) : (
                             <tr>
-                                <Td colSpan={tableHeaders.length}>No service data</Td>
+                                <Td>No service data</Td>
                             </tr>
                         )}
                     </tbody>
@@ -269,7 +259,6 @@ function Services() {
                         <ModalList>
                             {formData.used_parts &&formData.used_parts.map((part, index) => (
                                 <ModalLi key={index}>
-                                    {console.log(part)}
                                     <span>{part.part_name} - {part.quantity_used || part.quantity} PCS</span>
                                     <DeleteButton onClick={() => handleDeletePartFromService(index)}>X</DeleteButton>
                                 </ModalLi>

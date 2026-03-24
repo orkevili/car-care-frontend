@@ -5,16 +5,15 @@
     import { ActionButton, DeleteButton, ButtonGroup, CancelButton, ModalContent, ModalInput, ModalOverlay, ModalTitle } from "../components/Modal";
     import Loader from "../components/Loading";
     import { FiEdit, FiPlus, FiTrash } from "react-icons/fi";
-    import { useState, useEffect } from "react";
+    import { useState, useEffect, useContext } from "react";
     import { toast } from "react-toastify";
     import { PartAPI } from "../Api";
+    import { VehicleContext } from "../components/VehicleContext";
+import { useLocation } from "wouter";
 
     function Supplies() {
-        const [parts, setParts] = useState([])
-        const [loading, setLoading] = useState(true)
+        const [ , setLocation] = useLocation();
         const [showEditModal, setShowEditModal] = useState(false)
-        const vehicleId = localStorage.getItem("activeVehicleId");
-        const vehicleName = localStorage.getItem("activeVehicleName");
         const [formData, setFormData] = useState({
                 id: null,
                 name: "",
@@ -22,30 +21,7 @@
                 quantity: "",
                 price: "",
             })
-        
-        const fetchAllData = async () => {
-            try {
-                setLoading(true);                
-                const partResponse = await PartAPI.getById(vehicleId);
-                if (Array.isArray(partResponse.data)) {
-                    setParts(partResponse.data);
-                } else {
-                    setParts([]);
-                }
-            } catch (error) {
-                console.error("Error requesting data:", error);
-                toast.error("Couldn't load the data.")
-                setParts([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        useEffect(() => {
-            if (vehicleId) {
-                fetchAllData()
-            }
-        }, [vehicleId]); 
+        const { activeVehicle, setActiveVehicle, services, setServices, parts, setParts, loading, fetchVehicleData } = useContext(VehicleContext);
 
 
         const handleInputChange = (e) => {
@@ -75,7 +51,7 @@
             }
             try {
                 await PartAPI.delete(part.id);
-                fetchAllData();
+                fetchVehicleData(activeVehicle.id);
                 resetForm();
             } catch (error) {
                 console.error(error);
@@ -92,16 +68,23 @@
                 if (formData.id) {
                     await PartAPI.update(formData.id, formData)
                 } else {
-                    await PartAPI.create(vehicleId, formData)
+                    await PartAPI.create(activeVehicle.id, formData)
                 }
                 setShowEditModal(false)
                 resetForm()
-                fetchAllData()
+                fetchVehicleData(activeVehicle.id)
             } catch(error) {
                 alert("Error during save.")
                 console.error(error)
             }
         }
+
+        useEffect(() =>{
+            if (!activeVehicle) {
+                toast.warn("Please select a vehicle!");
+                setLocation('/garage');
+            }
+        }, [activeVehicle]);
 
         <Loader />
 
@@ -114,9 +97,9 @@
         return (
             <Container>
                 <Title>Supplies</Title>
-                <SmallTitle>{vehicleName}</SmallTitle>
+                <SmallTitle>{`${activeVehicle?.make} ${activeVehicle?.model}`}</SmallTitle>
                 <b>Total cost</b>{totalCost} Ft
-                {vehicleId && <StyledButton onClick={handleAddNew}><FiPlus />Add</StyledButton>}
+                {activeVehicle && <StyledButton onClick={handleAddNew}><FiPlus />Add</StyledButton>}
                 {loading ? (
                     <Loader />
                 ) : (

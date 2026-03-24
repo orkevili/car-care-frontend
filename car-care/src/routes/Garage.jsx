@@ -1,10 +1,11 @@
 import { useLocation } from "wouter";
 import { VehicleAPI } from "../Api";
+import { VehicleContext } from "../components/VehicleContext";
 import Container from "../components/Container";
 import StyledButton from "../components/StyledButton";
 import Title from "../components/Title";
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Loader from "../components/Loading";
 import { ModalContent, ModalInput, ModalOverlay, ModalTitle, DeleteButton, ActionButton, ActionModalContent, CancelButton, ButtonGroup } from "../components/Modal";
 import { toast } from "react-toastify";
@@ -57,8 +58,6 @@ const Description = styled.p`
 
 
 function Garage() {
-    const [vehicles, setVehicles] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [, setLocation] = useLocation();
     const [showEditModal, setShowEditModal] = useState(false); 
     const [showActionModal, setShowActionModal] = useState(false); 
@@ -73,27 +72,8 @@ function Garage() {
         purchase_price: "",
         purchase_odometer: "",
     });
+    const { vehicles, setVehicles, activeVehicle, setActiveVehicle, services, setServices, parts, setParts, loading, fetchVehicles, fetchVehicleData } = useContext(VehicleContext);
 
-    const fetchVehicles = async () => {
-        try {
-            setLoading(true);
-            const response = await VehicleAPI.getAll();
-
-            if (Array.isArray(response.data)) {
-                setVehicles(response.data);
-            }
-        } catch (error) {
-            console.error("Error requesting data:", error);
-            toast.error("Couldn't load the data.")
-            setVehicles([]);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchVehicles();
-    }, []);
 
     const handleInputChange = (e) => {
         setFormData({
@@ -121,7 +101,7 @@ function Garage() {
             fetchVehicles();
             
         } catch (error) {
-            alert("Error during save.");
+            toast.error(`Error during save, ${error}`)
             console.error(error);
         }
     };
@@ -151,18 +131,27 @@ function Garage() {
         }
         try {
             await VehicleAPI.delete(formData.id);
-            fetchVehicles(); 
+            fetchVehicles();
             setShowActionModal(false);
             resetForm();
         } catch (error) {
             console.error(error);
-            toast.error(`Error during deleting ${formData.make} ${formData.model} vehicle.`)
+            toast.error(`Error during deleting ${formData.make} ${formData.model} vehicle, ${error}`,)
         }
     };
 
     const handleSelectVehicle = () => {
-        localStorage.setItem("activeVehicleName", `${formData.make} ${formData.model}`);
-        localStorage.setItem("activeVehicleId", formData.id);
+        setActiveVehicle({
+            "id": formData.id,
+            "make": formData.make,
+            "model": formData.model,
+            "license_plate": formData.license_plate,
+            "year": formData.year,
+            "fuel": formData.fuel,
+            "purchase_date": formData.purchase_date,
+            "purchase_price": formData.purchase_price,
+            "purchase_odometer": formData.purchase_odometer,
+        });
         setShowActionModal(false);
         setLocation(`/services`);
     };
