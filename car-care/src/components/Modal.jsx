@@ -49,6 +49,46 @@ const ModalInput = styled.input`
     }
 `;
 
+const ModalSelector = styled.div`
+    background: linear-gradient(135deg, rgba(20, 20, 20, 1), rgba(47, 116, 109, 0.8));
+    border: 2px solid rgba(10, 230, 230, 1);
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(10, 230, 230, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+`;
+
+const ModalSelect = styled.select`
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(10, 230, 230, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-family: inherit;
+    &:hover {
+        cursor: pointer;
+        box-shadow: 2px 2px 12px black;
+    }
+`;
+
+const ModalOption = styled.option`
+    background-color: rgba(8, 105, 105, 0.5);
+`;
+
+const ModalList = styled.ul`
+    list-style: none;
+`;
+
+const ModalLi =styled.li`
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.2rem;
+    border-bottom: 2px solid rgba(10, 230, 230, 0.5);
+    border-radius: 7px;
+`;
+
 const ButtonGroup = styled.div`
     display: flex;
     justify-content: space-between;
@@ -72,21 +112,20 @@ const ActionModalContent = styled(ModalContent)`
 `;
 
 const ActionButton = styled(StyledButton)`
-    width: 100%;
     margin: 0;
-    padding: 0.75rem 0;
+    padding: 0.5rem;
     font-size: 1rem;
 `;
 
 const DeleteButton = styled(ActionButton)`
-  &:hover {
-    background-color: rgb(180, 40, 60);
-    border-color: rgb(220, 60, 80);   
+    &:hover {
+        background-color: rgb(180, 40, 60);
+        border-color: rgb(220, 60, 80);   
     & > svg {
-      color: rgb(28, 33, 42); 
+        color: rgb(28, 33, 42); 
     }
-  }
+    }
 `;
 
 
-export {ModalContent, ModalInput, ModalOverlay, ModalTitle, DeleteButton, ActionButton, ActionModalContent, CancelButton, ButtonGroup}
+export {ModalContent, ModalInput, ModalSelector, ModalSelect, ModalOption, ModalList, ModalLi, ModalOverlay, ModalTitle, DeleteButton, ActionButton, ActionModalContent, CancelButton, ButtonGroup}

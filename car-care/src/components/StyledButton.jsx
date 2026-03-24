@@ -4,7 +4,7 @@ const StyledButton = styled.button`
   font-family: "Orbitron", sans-serif;
   font-size: 1.3rem;
   margin: 0.5rem;
-  padding: 1.2rem;
+  padding: 1rem;
   max-height: 1.5rem;
   display: flex;
   justify-content: center;
