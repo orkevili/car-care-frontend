@@ -270,7 +270,7 @@ function Services() {
                             {formData.used_parts &&formData.used_parts.map((part, index) => (
                                 <ModalLi key={index}>
                                     {console.log(part)}
-                                    <span>{part.part_name} - {part.quantity} PCS</span>
+                                    <span>{part.part_name} - {part.quantity_used || part.quantity} PCS</span>
                                     <DeleteButton onClick={() => handleDeletePartFromService(index)}>X</DeleteButton>
                                 </ModalLi>
                             ))}

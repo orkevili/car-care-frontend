@@ -45,9 +45,14 @@ export const Tr = styled.tr`
 `;
 
 export const Td = styled.td`
+    font-family: "Iosevka Charon Mono", monospace;
+    font-weight: 500;
     width: auto;
     text-align: center;
     color: white;
+    &:hover {
+        cursor: default;
+    }
 
     @media (max-width: 900px) {
         display: flex;

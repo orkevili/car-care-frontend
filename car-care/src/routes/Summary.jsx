@@ -8,6 +8,7 @@ function Summary() {
         <Container>
             <Title>Summary</Title>
             <SmallTitle>{vehicleName}</SmallTitle>
+            Under development..
         </Container>
     )
 }
