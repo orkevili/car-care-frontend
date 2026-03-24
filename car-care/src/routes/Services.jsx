@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ServiceAPI, VehicleAPI } from "../Api"; 
+import { PartAPI, ServiceAPI } from "../Api"; 
 import Container from "../components/Container";
 import StyledButton from "../components/StyledButton";
 import Title, { SmallTitle } from "../components/Title";
@@ -7,13 +7,15 @@ import Loader from "../components/Loading";
 import { Table, Td, Tr } from "../components/StyledTable"
 import { FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { ActionButton, ButtonGroup, CancelButton, DeleteButton, ModalContent, ModalInput, ModalOverlay, ModalTitle } from "../components/Modal";
+import { ActionButton, ButtonGroup, CancelButton, DeleteButton, ModalContent, ModalInput, ModalSelector, ModalSelect, ModalOverlay, ModalTitle, ModalOption, ModalList, ModalLi } from "../components/Modal";
 import { useLocation } from "wouter";
 
 
 function Services() {
     const [ ,setLocation] = useLocation();
     const [services, setServices] = useState([]);
+    const [parts, setParts] = useState([]);
+    const [currentPart, setCurrentPart] = useState({part_id: "", quantity: 1});
     const [loading, setLoading] = useState(true);
     const [showEditModal, setShowEditModal] = useState(false);
     const vehicleId = localStorage.getItem("activeVehicleId");
@@ -25,23 +27,33 @@ function Services() {
         date: "",
         odometer: "",
         labor_cost: "",
-        vehicle_id: ""
+        vehicle_id: "",
+        used_parts: []
     })
+
+    const getTodayDate = () => {
+        const today = new Date();
+        return today.toISOString().split("T")[0];
+    }
+
+    const resetForm = () => {
+        setFormData({id: null, title: "", description: "",  date: getTodayDate(), odometer: "", labor_cost: "", vehicle_id: "", used_parts: []});
+        setCurrentPart({part_id: "", quantity: 1});
+    }
 
     const fetchAllData = async () => {
         try {
             setLoading(true);                
             const serviceResponse = await ServiceAPI.getById(vehicleId);
-            if (Array.isArray(serviceResponse.data)) {
+            const partResponse = await PartAPI.getById(vehicleId);
+            if (Array.isArray(serviceResponse.data) && Array.isArray(partResponse.data)) {
                 setServices(serviceResponse.data);
-            } else {
-                setServices([]);
+                setParts(partResponse.data.filter((part, i) => part.quantity > 0));
             }
             
         } catch (error) {
             console.error("Error requesting data:", error);
             toast.error("Couldn't load the data.")
-            setServices([]);
         } finally {
             setLoading(false);
         }
@@ -61,28 +73,18 @@ function Services() {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
-        })
-    }
-
-    const getTodayDate = () => {
-        const today = new Date();
-        return today.toISOString().split("T")[0];
-    }
-
-    const resetForm = () => {
-        setFormData({id: null, title: "", description: "",  date: getTodayDate(), odometer: "", labor_cost: "", vehicle_id: ""})
-    }
+        });
+    };
 
     const handleAddNew = () => {
-        resetForm()
-        setShowEditModal(true)
-    }
+        resetForm();
+        setShowEditModal(true);
+    };
 
     const handleEdit = (service) => {
         setFormData(service);
         setShowEditModal(true);
-        console.log(service)
-    }
+    };
 
     const handleDelete = async (service) => {
         if (!window.confirm(`Are you sure to delete ${service.title} service entry?`)) {
@@ -116,6 +118,42 @@ function Services() {
             alert("Error during save.")
             console.error(error)
         }
+    };
+
+    // Part selector
+    const handleAddPart = () => {
+        if (!currentPart.part_id) {
+            toast.warn("Please select a part first!");
+            return;
+        }
+        const selectedPartInfo = parts.find(p => p.id === parseInt(currentPart.part_id));
+        if (!selectedPartInfo) {
+            toast.error("Part not found!");
+            return;
+        }
+        const existingPartIndex = formData.used_parts.findIndex(
+            (p) => parseInt(p.part_id) === parseInt(currentPart.part_id)
+        );
+        let updatedUsedParts = [...formData.used_parts];
+        if (existingPartIndex >= 0) {
+            updatedUsedParts[existingPartIndex].quantity += currentPart.quantity;
+        } else {
+            updatedUsedParts.push({
+            part_id: currentPart.part_id,
+            part_name: selectedPartInfo.name,
+            quantity: currentPart.quantity
+        });
+        }
+        setFormData({
+            ...formData,
+            used_parts: updatedUsedParts
+        });
+        setCurrentPart({part_id: "", quantity: 1});
+    };
+    
+    const handleDeletePartFromService = (indexToRemove) => {
+        const updatedParts = formData.used_parts.filter((_, index) => index !== indexToRemove);
+        setFormData({...formData, used_parts: updatedParts});
     }
 
 
@@ -151,7 +189,7 @@ function Services() {
                                     <Td>
                                         <ActionButton onClick={() => handleEdit(event)}><FiEdit /></ActionButton>
                                         <DeleteButton onClick={() => handleDelete(event)}><FiTrash /></DeleteButton>
-                                        </Td>
+                                    </Td>
                                 </Tr>
                                 
                             ))
@@ -206,6 +244,38 @@ function Services() {
                             value={formData.labor_cost}
                             onChange={handleInputChange}
                         />
+                        <label>Part selector</label>
+                        <ModalSelector>
+                        <ModalSelect name="part_selector" value={currentPart.part_id} onChange={(e) => setCurrentPart({...currentPart, part_id: e.target.value, quantity: currentPart.quantity})}>
+                            <ModalOption value="">Select part</ModalOption>
+                            {parts.map(part => (
+                                <ModalOption key={part.id} value={part.id}>
+                                    {part.name} (In stock: {part.quantity})
+                                </ModalOption>
+                            ))}
+                        </ModalSelect>
+                        <ModalInput 
+                            type="number"
+                            name="part_quantity"
+                            placeholder="Qty"
+                            min={1}
+                            value={currentPart.quantity}
+                            onChange={(e) => setCurrentPart({...currentPart, quantity: parseInt(e.target.value) || 1})}
+                        />
+                        <StyledButton type="button" onClick={handleAddPart}>Add</StyledButton>
+                        </ModalSelector>
+                        
+                        <label>Used parts</label>
+                        <ModalList>
+                            {formData.used_parts &&formData.used_parts.map((part, index) => (
+                                <ModalLi key={index}>
+                                    {console.log(part)}
+                                    <span>{part.part_name} - {part.quantity} PCS</span>
+                                    <DeleteButton onClick={() => handleDeletePartFromService(index)}>X</DeleteButton>
+                                </ModalLi>
+                            ))}
+                        </ModalList>
+
                         <ModalInput 
                             type="number"
                             name="vehicle_id"
