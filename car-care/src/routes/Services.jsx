@@ -73,15 +73,15 @@ function Services() {
     };
     
     const handleSave = async () => {
-        if (!formData.title || !formData.odometer || !formData.date || !formData.labor_cost || !formData.description) {
-            toast.warn("Name, odometer, date and cost are required!");
+        if (!formData.title || !formData.odometer || !formData.date || !formData.labor_cost) {
+            toast.warn("Title, odometer, date and cost are required!");
             return
         }
         try {
             if (formData.id) {
                 await ServiceAPI.update(formData.id, formData)
             } else {
-                await ServiceAPI.create(vehicleId, formData)
+                await ServiceAPI.create(activeVehicle.id, formData)
             }
             setShowEditModal(false);
             resetForm();
@@ -134,6 +134,9 @@ function Services() {
         }
     }, [activeVehicle]);
 
+    services.map((el) => {
+        console.log(el.used_parts)
+    })
 
     let totalCost = 0;
     for(let i=0; i < services.length; i++) {

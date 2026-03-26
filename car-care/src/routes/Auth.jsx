@@ -93,9 +93,6 @@ function Auth() {
       if (result.success) {
         setRegisterForm(false)
         setLocation("/login")
-      } else {
-        setError(result.message)
-        toast.error(result.message.response.data.error)
       }
     }
   

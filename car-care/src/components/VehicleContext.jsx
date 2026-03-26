@@ -37,7 +37,6 @@ export const VehicleProvider = ({ children }) => {
             return;
         }
         try {
-            console.log("VehicleData fetch data started", vehicleId)
             setLoading(true);                
             const serviceResponse = await ServiceAPI.getById(vehicleId);
             const partResponse = await PartAPI.getById(vehicleId);

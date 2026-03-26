@@ -47,12 +47,13 @@ export const AuthProvider = ({ children }) => {
     const register = async (username, password) => {
         try {
             const response = await AuthAPI.register(username, password);
-            setMessage(response.data.msg)
-            return {success: true}
+            setMessage(response.data.msg);
+            return {success: true};
 
         } catch (error) {
-            console.error(error)
-            return {success: false, message: error}
+            console.error(error.response.data);
+            toast.error(`Error: ${error.response.data[1]}`);
+            return {success: false, message: error};
         }
     }
 
@@ -75,7 +76,7 @@ export const AuthProvider = ({ children }) => {
             return { succes: true, access, refresh };
             
         } catch (error) {
-            let errorMessage = "Hiba történt."
+            let errorMessage = "Error occured."
             if (error.response && error.response.data) {
                 errorMessage = error.response.data.detail || JSON.stringify(error.response.data);
                 toast.errror(errorMessage);
