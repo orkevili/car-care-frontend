@@ -36,6 +36,18 @@ apiClient.interceptors.response.use(
     }
 );
 
+export const FileAPI = {
+    upload: (file) => {
+        const formData = new FormData();
+        formData.append('csv_file', file);
+        return apiClient.post('/data/upload-csv/', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+    }
+};
+
 export const AuthAPI = {
     register: (username, password) => apiClient.post('/register/', { username, password }),
     login: (username, password) => apiClient.post('/login/', { username, password }),

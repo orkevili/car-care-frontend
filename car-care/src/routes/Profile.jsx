@@ -1,10 +1,12 @@
 import styled from "styled-components";
 import Container from "../components/Container";
 import Title from "../components/Title";
-import { useLocation } from "wouter";
-import { useState, useEffect } from "react";
-import { AuthAPI } from "../Api";
+import { useState, useEffect, useContext, useRef } from "react";
 import Loader from "../components/Loading";
+import { VehicleContext } from "../components/VehicleContext";
+import StyledButton from "../components/StyledButton";
+import { toast } from "react-toastify";
+import { FileAPI } from "../Api";
 
 const Card = styled.div`
     display: flex;
@@ -42,29 +44,85 @@ const Description = styled.p`
     font-size: 1rem;
 `
 
+const ButtonBox = styled.div`
+    display: flex;
+    margin: 2rem;
+    filter: drop-shadow(2px 3px 5px black);
+`
+
+
 function Profile() {
     const [loading, setLoading] = useState(true);
     const [cost, setCost] = useState(0);
     const [vehicleCount, setVehicleCount] = useState(0);
     const [serviceCount, setServiceCount] = useState(0);
-    const [, setLocation] = useLocation();
+    const fileInputRef = useRef(null);
+    const [file, setFile] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const { vehicles, services, parts } = useContext(VehicleContext);
+
+
+    function handleFileChange(event) {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            if (selectedFile.type !== "text/csv" && !selectedFile.name.endsWith('.csv')) {
+                toast.error("Please select a CSV fájl!");
+                return;
+            }
+            setFile(selectedFile);
+        }
+    };
+
+    const handleUpload = async () => {
+        if (!file) {
+            toast.warn("No file selected!");
+        }
+        setIsUploading(true);
+        try {
+            const resp = await FileAPI.upload(file);
+            if (resp.ok) {
+                toast.success(`Upload success!`);
+                setFile(null);
+            } else {
+                toast.error("Error during upload!");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Network error occured");
+        } finally {
+            setIsUploading(false);
+        }
+    }
+    
+    function exportData() {
+        toast.warn("Choose where to export the data!");
+    };
+
+    function getCost() {
+        let sumCost = 0;
+        if (!services) return 0;
+        services.forEach(service => {
+            sumCost += Number(service.labor_cost);
+            service.used_parts && Array.isArray(service.used_parts) && service.used_parts.forEach((parts) => {
+                sumCost += Number(parts.part_price)*Number(parts.quantity_used);
+            });
+        });
+        return sumCost;
+    };
+    
 
     useEffect(() => {
-        const fetchUserData = async () => {
         try {
-            const response = await AuthAPI.getUserData();
-            const { totalCost, vehicleCount, serviceCount } = response.data;
-            setCost(totalCost)
-            setVehicleCount(vehicleCount)
-            setServiceCount(serviceCount)
+            setCost(getCost());
+            setVehicleCount(vehicles.length);
+            setServiceCount(services.length);
         } catch(error) {
-            console.error(error)
+            console.error(error);
         } finally {
             setLoading(false);
         }
-        }
-        fetchUserData();
-    }, [])
+    }, [vehicles, services, parts]);
 
     return (
         <>
@@ -73,6 +131,14 @@ function Profile() {
             ) : (
                 <Container>
                     <Title>Profile</Title>
+                    <ButtonBox>
+                        <StyledButton onClick={() => fileInputRef.current.click()}>Select CSV</StyledButton>
+                        <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} />
+                        <StyledButton onClick={handleUpload} disabled={isUploading}>
+                            {isUploading ? "Uploading..." : "Import Data"}
+                        </StyledButton>
+                        <StyledButton onClick={exportData}>Export data</StyledButton>
+                    </ButtonBox>
                     <CardsPage>
                     <Card>
                         <CardTitle>Total cost</CardTitle>
