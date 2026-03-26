@@ -134,10 +134,6 @@ function Services() {
         }
     }, [activeVehicle]);
 
-    services.map((el) => {
-        console.log(el.used_parts)
-    })
-
     let totalCost = 0;
     for(let i=0; i < services.length; i++) {
         totalCost += services[i].labor_cost;

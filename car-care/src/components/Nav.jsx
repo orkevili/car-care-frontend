@@ -73,7 +73,7 @@ const HomeBtn = styled(Link)`
     }
 `
 
-const LogoutBtn = styled.button`
+const ProfileBtn = styled.button`
     display: flex;
     gap: 1rem;
     padding: 0.5rem;
@@ -109,12 +109,16 @@ const MenuGroup = styled.div`
 
 
 function Nav({user, logout}) {
-    const [, setLocation] = useLocation()
+    const [, setLocation] = useLocation();
 
     const handleLogout = () => {
         logout()
-        setLocation('/login')
-    }
+        setLocation('/login');
+    };
+
+    const redirectToProfile = () => {
+        setLocation('/profile');
+    };
 
     return (
         <>
@@ -123,7 +127,7 @@ function Nav({user, logout}) {
                 <Logo src={logo} alt="Logo" />
                 <SmallTitle>Car-Care</SmallTitle>
             </HomeBtn>
-            <LogoutBtn onClick={handleLogout}>{user}<FiLogOut /></LogoutBtn>
+            <ProfileBtn onClick={redirectToProfile}>{user}<FiLogOut onClick={handleLogout} /></ProfileBtn>
             <MenuGroup>
                 <StyledLink to='/garage'><Image src={carIcon} /><span>Garage</span></StyledLink>
                 <StyledLink to='/services'><Image src={wrenchIcon} /><span>Services</span></StyledLink>
@@ -134,6 +138,6 @@ function Nav({user, logout}) {
         </Navbar>
         </>
     )
-}
+};
 
-export default Nav
+export default Nav;
