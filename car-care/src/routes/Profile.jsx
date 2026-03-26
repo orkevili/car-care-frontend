@@ -77,12 +77,13 @@ function Profile() {
     const handleUpload = async () => {
         if (!file) {
             toast.warn("No file selected!");
+            return;
         }
         setIsUploading(true);
         try {
             const resp = await FileAPI.upload(file);
-            if (resp.ok) {
-                toast.success(`Upload success!`);
+            if (resp.status == 200) {
+                toast.success(`Data uploaded to server!`);
                 setFile(null);
             } else {
                 toast.error("Error during upload!");
