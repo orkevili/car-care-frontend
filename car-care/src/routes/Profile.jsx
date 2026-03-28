@@ -66,8 +66,8 @@ function Profile() {
     function handleFileChange(event) {
         const selectedFile = event.target.files[0];
         if (selectedFile) {
-            if (selectedFile.type !== "text/csv" && !selectedFile.name.endsWith('.csv')) {
-                toast.error("Please select a CSV fájl!");
+            if (selectedFile.type !== "application/json" && !selectedFile.name.endsWith('.json')) {
+                toast.error("Please select a JSON file!");
                 return;
             }
             setFile(selectedFile);
@@ -156,7 +156,7 @@ function Profile() {
                 <Container>
                     <Title>Profile</Title>
                     <ButtonBox>
-                        <StyledButton onClick={() => fileInputRef.current.click()}>Select CSV</StyledButton>
+                        <StyledButton onClick={() => fileInputRef.current.click()}>Select JSON</StyledButton>
                         <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} />
                         <StyledButton onClick={handleUpload} disabled={isUploading}>
                             {isUploading ? "Uploading..." : "Import Data"}

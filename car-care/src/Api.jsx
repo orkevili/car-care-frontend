@@ -39,8 +39,8 @@ apiClient.interceptors.response.use(
 export const FileAPI = {
     upload: (file) => {
         const formData = new FormData();
-        formData.append('csv_file', file);
-        return apiClient.post('/data/upload-csv/', formData, {
+        formData.append('backup_file', file);
+        return apiClient.post('/data/import/', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
