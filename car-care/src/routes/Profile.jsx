@@ -90,15 +90,38 @@ function Profile() {
             }
         } catch (error) {
             console.error(error);
-            toast.error("Network error occured");
+            toast.error(`Error during upload, ${error}`);
         } finally {
             setIsUploading(false);
         }
     }
-    
-    function exportData() {
-        toast.warn("Choose where to export the data!");
+
+    const handleExport = async () => {
+        try {
+            const resp = await FileAPI.exportData();
+            if (resp.status === 200 && resp.data.backup_data) {
+                const jsonString = JSON.stringify(resp.data.backup_data, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                const dateString = new Date().toISOString().split('T')[0];
+                link.setAttribute('download', `car_care_backup_${dateString}.json`);
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode.removeChild(link);
+                window.URL.revokeObjectURL(url);
+                toast.success(resp.data.msg || "Export successful!");
+            } else {
+                toast.error("Error during requesting data!");
+            }
+        } catch (error) {
+            console.error("Export error:", error);
+            const serverErrorMessage = error.response?.data?.error || "Network error has occured during the data export!";
+            toast.error(serverErrorMessage);
+        }
     };
+
 
     function getCost() {
         let sumCost = 0;
@@ -138,7 +161,7 @@ function Profile() {
                         <StyledButton onClick={handleUpload} disabled={isUploading}>
                             {isUploading ? "Uploading..." : "Import Data"}
                         </StyledButton>
-                        <StyledButton onClick={exportData}>Export data</StyledButton>
+                        <StyledButton onClick={handleExport}>Export data</StyledButton>
                     </ButtonBox>
                     <CardsPage>
                     <Card>

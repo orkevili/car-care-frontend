@@ -45,7 +45,8 @@ export const FileAPI = {
                 'Content-Type': 'multipart/form-data'
             }
         });
-    }
+    },
+    exportData: () => apiClient.get('/data/export/')
 };
 
 export const AuthAPI = {
