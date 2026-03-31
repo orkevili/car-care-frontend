@@ -1,4 +1,4 @@
-    import Container from "../components/Container";
+    import { Container } from "../components/Container";
     import { Table, Td, Tr } from "../components/StyledTable"
     import Title, { SmallTitle } from "../components/Title";
     import StyledButton from "../components/StyledButton";

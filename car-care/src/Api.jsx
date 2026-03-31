@@ -54,13 +54,22 @@ export const AuthAPI = {
     login: (username, password) => apiClient.post('/login/', { username, password }),
     logout: () => apiClient.get('/logout/'), 
     getUserData: () => apiClient.get('/me/'), 
+    deleteProfile: () => apiClient.delete('/account/delete/')
 };
 
 export const VehicleAPI = {
     getAll: () => apiClient.get('/vehicles/'),
-    create: (newCar) => apiClient.post('/vehicles/', { newCar }),
+    create: (newCar) => apiClient.post('/vehicles/', newCar, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }),
     delete: (id) => apiClient.delete(`/vehicles/${id}/`),
-    update: (id, updatedCar) => apiClient.patch(`/vehicles/${id}/`, updatedCar)
+    update: (id, updatedCar) => apiClient.patch(`/vehicles/${id}/`, updatedCar, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
 };
 
 export const ServiceAPI = {

@@ -1,12 +1,13 @@
 import styled from "styled-components";
-import Container from "../components/Container";
-import Title from "../components/Title";
+import { Container, SmallContainer } from "../components/Container";
+import Title, { SmallTitle } from "../components/Title";
 import { useState, useEffect, useContext, useRef } from "react";
 import Loader from "../components/Loading";
 import { VehicleContext } from "../components/VehicleContext";
 import StyledButton from "../components/StyledButton";
 import { toast } from "react-toastify";
-import { FileAPI } from "../Api";
+import { FileAPI, AuthAPI } from "../Api";
+import { DeleteButton, ModalSelect }  from "../components/Modal";
 
 const Card = styled.div`
     display: flex;
@@ -53,14 +54,12 @@ const ButtonBox = styled.div`
 
 function Profile() {
     const [loading, setLoading] = useState(true);
-    const [cost, setCost] = useState(0);
     const [vehicleCount, setVehicleCount] = useState(0);
-    const [serviceCount, setServiceCount] = useState(0);
     const fileInputRef = useRef(null);
     const [file, setFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
 
-    const { vehicles, services, parts } = useContext(VehicleContext);
+    const { vehicles, services, parts, fetchVehicles } = useContext(VehicleContext);
 
 
     function handleFileChange(event) {
@@ -85,6 +84,7 @@ function Profile() {
             if (resp.status == 200) {
                 toast.success(`Data uploaded to server!`);
                 setFile(null);
+                fetchVehicles();
             } else {
                 toast.error("Error during upload!");
             }
@@ -122,25 +122,27 @@ function Profile() {
         }
     };
 
-
-    function getCost() {
-        let sumCost = 0;
-        if (!services) return 0;
-        services.forEach(service => {
-            sumCost += Number(service.labor_cost);
-            service.used_parts && Array.isArray(service.used_parts) && service.used_parts.forEach((parts) => {
-                sumCost += Number(parts.part_price)*Number(parts.quantity_used);
-            });
-        });
-        return sumCost;
-    };
+    const handleDeleteProfile = async () => {
+        const isConfirmed = window.confirm("Are you sure want to delete your profile with all your data?");
+        if (!isConfirmed) return;
+        try {
+            const resp = AuthAPI.deleteProfile();
+            if (resp.status === 200) {
+                toast.success("Your account has been deleted permamently!");
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("refresh_token");
+                setLocation('/login');
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Error during profile delete!");
+        }
+    }
     
 
     useEffect(() => {
         try {
-            setCost(getCost());
             setVehicleCount(vehicles.length);
-            setServiceCount(services.length);
         } catch(error) {
             console.error(error);
         } finally {
@@ -150,35 +152,39 @@ function Profile() {
 
     return (
         <>
-        {loading ? (
-                <Loader />
-            ) : (
-                <Container>
-                    <Title>Profile</Title>
-                    <ButtonBox>
-                        <StyledButton onClick={() => fileInputRef.current.click()}>Select JSON</StyledButton>
-                        <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} />
-                        <StyledButton onClick={handleUpload} disabled={isUploading}>
-                            {isUploading ? "Uploading..." : "Import Data"}
-                        </StyledButton>
-                        <StyledButton onClick={handleExport}>Export data</StyledButton>
-                    </ButtonBox>
-                    <CardsPage>
-                    <Card>
-                        <CardTitle>Total cost</CardTitle>
-                        <Description>{cost} HUF</Description>
-                    </Card>
-                    <Card>
-                        <CardTitle>Vehicles</CardTitle>
-                        <Description>{vehicleCount}</Description>
-                    </Card>
-                    <Card>
-                        <CardTitle>Services</CardTitle>
-                        <Description>{serviceCount}</Description>
-                    </Card>
-                    </CardsPage>
-                </Container>
-            )}
+        {loading && <Loader />}
+        <Container>
+            <Title>Profile</Title>
+            <ButtonBox>
+                <StyledButton onClick={() => fileInputRef.current.click()}>Select JSON</StyledButton>
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} />
+                <StyledButton onClick={handleUpload} disabled={isUploading}>
+                    {isUploading ? "Uploading..." : "Import Data"}
+                </StyledButton>
+                <StyledButton onClick={handleExport}>Export data</StyledButton>
+            </ButtonBox>
+            <span>Vehicles: {vehicleCount}</span>
+            <SmallContainer>
+                <SmallTitle>Settings</SmallTitle>
+                <SmallContainer>
+                    <ul>
+                        <li>
+                            <label for="language">Language</label>
+                            <ModalSelect name="language" id="language" />
+                        </li>
+                        <li>
+                            <label for="currency">Currency</label>
+                            <ModalSelect name="currency" id="currency" />
+                        </li>
+                        <li>
+                            <label for="theme">Theme</label>
+                            <ModalSelect name="theme" id="theme" />
+                            </li>
+                    </ul>
+                </SmallContainer>
+            </SmallContainer>
+            <DeleteButton onClick={() => handleDeleteProfile()}>Delete profile</DeleteButton>
+        </Container>
         </>
     )
 }

@@ -60,7 +60,8 @@ const ModalSelector = styled.div`
 `;
 
 const ModalSelect = styled.select`
-    padding: 0.5rem;
+    padding: 0.25rem;
+    margin: 0.24rem;
     border-radius: 4px;
     border: 1px solid rgba(10, 230, 230, 0.5);
     background-color: rgba(0, 0, 0, 0.5);
@@ -68,7 +69,7 @@ const ModalSelect = styled.select`
     font-family: inherit;
     &:hover {
         cursor: pointer;
-        box-shadow: 2px 2px 12px black;
+        box-shadow: 2px 2px 8px black;
     }
 `;
 

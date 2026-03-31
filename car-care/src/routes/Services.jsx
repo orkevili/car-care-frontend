@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, act } from "react";
 import { PartAPI, ServiceAPI } from "../Api"; 
-import Container from "../components/Container";
+import { Container } from "../components/Container";
 import StyledButton from "../components/StyledButton";
 import Title, { SmallTitle } from "../components/Title";
 import Loader from "../components/Loading";
