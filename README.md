@@ -1,41 +1,71 @@
-# Webfejlesztés beadandó - Örkényi Vilmos
-## Car-Care
-![logo](images/logo.png)
-### Téma
-- Egy weboldal, amely segítségével járművek szervízelését, költségeit lehet dokumentálni.
-- Az oldal egy sqlite adatbázist használ az adatok tárolására.
-- A back-end flask alapon fut, a front-end react. 
-### Funkciók
-- Felhasználók létrehozása.
-- Járművek létrehozása és hozzárendelése a felhasználóhoz.
-- A jármű fontosabb adatainak tárolása(márka, modell, évjárat, rendszám, vételi ár).
-- A szervíz bejegyzések tartalmazzák az elvégzett tevékenység rövid elnevezését, leírását, dátumát, a felhasznált alkatrészeket és a szolgáltatás költségét.
+# 🚗 Car Care - Frontend UI
+<p align="center">
+  <img src="car-care/src/assets/favicon.png" alt="App logo"/>
+</p>
 
-### Szerver endpoint-ok
-## Felhasználó
-- Regisztráció
-- Bejelentkezés
-- Kijelentkezés
+    Ez a repository tartalmazza a Car Care webalkalmazás frontend kódját. A felület egy modern, egyoldalas alkalmazás amely gyors és interaktív felhasználói élményt biztosít a járművek, szervizesemények és alkatrészek kezeléséhez.
 
-## Jármű
-- Aktuális felhasználó járműveinek lekérdezése
-- Jármű hozzáadása, módosítása, törlése
+A frontend szorosan együttműködik a különálló Django backend API-val, éles környezetben pedig Nginx webszerver szolgálja ki Docker konténerből.
 
-## Szervízek
-- Adott jármű szervízbejegyzéseinek lekérdezése
-- Szervízbejegyzés létrehozása, módosítása, törlése
+## Használt Technológiák
+* **Alaprendszer:** React.js
+* **Építőeszköz (Bundler):** Vite 
+* **Hálózati kérések:** Axios (Beállított interceptorokkal a Token kezeléshez)
+* **Útválasztás (Routing):** Wouter
+* **Éles kiszolgálás:** Nginx
+* **Konténerizáció:** Docker
+* **CI/CD:** GitHub Actions (Self-hosted runner)
 
-## Alkatrészek
-- Adott felhasználó összes alkatrészének lekérdezése
-- Alkatrészek hozzáadása, módosítása, törlése
+## Architektúra és Hálózat
+Éles környezetben az alkalmazás lefordított (buildelt) statikus fájljait egy  Nginx konténer szolgálja ki. A rendszer a backenddel közös Docker hálózaton (`car_care_net`) osztozik.
 
-## Tervek
-- A tervek törekedtek a minimalista, de egyben modern megjelenésre.
-> A főoldal gyors áttekintést nyújt a felhasználó járműveiről, legutóbbi tevékenységeiről
-![mockup](images/mockup.png)
+A Cloudflare Tunnel forgalomirányítása miatt **nincs szükség bonyolult CORS beállításokra**:
+* A felhasználó megnyitja a `shitbox.hu` oldalt ➡️ A Cloudflare a Frontend (Nginx) konténernek adja a kérést.
+* A React kód a háttérben kérést küld az `/api/vehicles/` címre ➡️ A Cloudflare ezt automatikusan a Backend (Django) konténernek továbbítja.
 
-> A szervíz oldalon láthatók a szerelések, azok költségei
-![mockup](images/services.png)
+## Fejlesztői (Lokális) Környezet Beállítása
 
-> Az alkatrészek oldalon tárolható a megvásárolt alkatrészek, az is, hogy melyik alkatrészből mennyi áll rendelkezésre. Ez azért fontos, mivel előfordulhat, hogy veszünk egy alkatrészt, de nem kerül egyből beszerelésre, így nyomon követhető, hogy miből tartunk "raktáron".
-![mockup](images/parts.png)
+Ha a saját gépeden szeretnéd módosítani a kódot (Docker nélkül):
+
+1. **Klónozd a repót:**
+   > git clone [https://github.com/orkevili/car-care-frontend.git](https://github.com/orkevili/car-care-frontend.git)
+   cd `saját repo`
+
+2. **Telepítsd a függőségeket:**
+    > npm install
+
+3. **Lokális fejlesztői szerver indítása:**
+    > npm run dev    
+    - Megjegyzés: A vite.config.js fájlban be van állítva egy proxy, így a lokális fejlesztés során a /api kérések automatikusan a helyi Django szerverre (pl. localhost:8000) irányítódnak, elkerülve a CORS hibákat.
+
+## 🐳 Élesítés Dockerrel
+
+1. **A konténer felépítése és indítása:**
+    > docker compose up -d --build
+
+2. **Nginx útválasztás**
+    ``` 
+    A projekt tartalmaz egy egyedi nginx.conf fájlt. Ez biztosítja, hogy ha a felhasználó közvetlenül egy aloldalra (pl. /vehicles) frissít rá, az Nginx ne 404-es hibát adjon, hanem töltse be az index.html-t, átadva az irányítást a React Routernek.
+
+## Autentikáció és API Kommunikáció
+
+A frontend a backenddel Token alapú hitelesítéssel kommunikál.
+
+- Sikeres bejelentkezéskor a szerver által adott Access Token a böngésző localStorage memóriájába kerül.
+
+- Az Api.jsx fájlban található Axios példány egy "Interceptor" segítségével automatikusan minden további kérés fejlécébe beilleszti ezt a tokent.
+
+- Bármilyen API kérés a relatív `/api/` útvonalra megy, így a domaintől függetlenül működik.
+
+## CI/CD - Automatikus Deploy
+
+A kód karbantartását egy GitHub Actions folyamat (`.github/workflows/deploy.yml`) automatizálja.
+Amikor új kódot pusholsz a `main` ágra:
+
+1. A szervereden futó Self-hosted Runner érzékeli a változást.
+
+2. Letölti a friss kódot.
+
+3. Újraépíti az Nginx konténert a legújabb React builddel.
+
+4. Lecseréli a futó konténert anélkül, hogy a backend működését megzavarná.
