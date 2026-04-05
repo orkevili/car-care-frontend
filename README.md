@@ -3,7 +3,7 @@
   <img src="car-care/src/assets/favicon.png" alt="App logo"/>
 </p>
 
-    Ez a repository tartalmazza a Car Care webalkalmazás frontend kódját. A felület egy modern, egyoldalas alkalmazás amely gyors és interaktív felhasználói élményt biztosít a járművek, szervizesemények és alkatrészek kezeléséhez.
+Ez a repository tartalmazza a Car Care webalkalmazás frontend kódját. A felület egy modern, egyoldalas alkalmazás amely gyors és interaktív felhasználói élményt biztosít a járművek, szervizesemények és alkatrészek kezeléséhez.
 
 A frontend szorosan együttműködik a különálló Django backend API-val, éles környezetben pedig Nginx webszerver szolgálja ki Docker konténerből.
 
@@ -44,8 +44,7 @@ Ha a saját gépeden szeretnéd módosítani a kódot (Docker nélkül):
     > docker compose up -d --build
 
 2. **Nginx útválasztás**
-    ``` 
-    A projekt tartalmaz egy egyedi nginx.conf fájlt. Ez biztosítja, hogy ha a felhasználó közvetlenül egy aloldalra (pl. /vehicles) frissít rá, az Nginx ne 404-es hibát adjon, hanem töltse be az index.html-t, átadva az irányítást a React Routernek.
+    > A projekt tartalmaz egy egyedi nginx.conf fájlt. Ez biztosítja, hogy ha a felhasználó közvetlenül egy aloldalra (pl. /vehicles) frissít rá, az Nginx ne 404-es hibát adjon, hanem töltse be az index.html-t, átadva az irányítást a React Routernek.
 
 ## Autentikáció és API Kommunikáció
 
