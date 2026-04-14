@@ -4,8 +4,6 @@ services:
   front-end:
     container_name: car_care_frontend
     build: .
-    ports:
-      - "5766:80"
     restart: always
     networks:
       - car_care_net
