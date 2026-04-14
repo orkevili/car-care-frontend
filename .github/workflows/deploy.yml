@@ -1,0 +1,25 @@
+name: Front-end Deploy
+
+on:
+  push:
+    branches: [ "main"]
+
+jobs:
+  deploy:
+    name: Deploy front-end
+    runs-on: self-hosted
+    
+    steps:
+    - name: Download code
+      uses: actions/checkout@v4
+
+    - name: Generate .env file for Vite
+      run: |
+        echo "VITE_API_URL=/api/" > .env
+
+    - name: Rebuild and start Front-end container
+      run: |
+        docker compose up -d --build
+
+    - name: Clean dangling Docker images
+      run: docker image prune -f
