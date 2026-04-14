@@ -3,7 +3,7 @@ import StyledButton from "../components/StyledButton"
 import { useState, useContext, useEffect } from "react"
 import { AuthContext } from "../components/AuthContext"
 import { useLocation } from "wouter"
-import Title from "../components/Title"
+import Title, { SmallTitle } from "../components/Title"
 import Loader from "../components/Loading"
 import { toast } from "react-toastify"
 import logo from '../assets/logo.png'; 
@@ -36,14 +36,14 @@ const Input = styled.input`
   border-width: 3px;
   box-shadow: 2px 2px 5px black;
   background: transparent;
-  transition: all 0.2 ease-in-out;
+  transition: all 0.2s ease-in-out;
   &::placeholder {
     color: white;
     opacity: 0.5;
   }
   &:focus {
-    border: black;
-    outline: black;
+    border: 5px solid rgba(10, 230, 230, 1);
+    outline: 3px solid rgb(36, 64, 64);
   }
   @media only screen and (max-width: 1000px) {
     font-size: 1rem;
@@ -59,9 +59,12 @@ const Button = styled.button`
   border: none;
   transition: 0.2s all ease-in-out;
   cursor: pointer;
+  filter: drop-shadow(2px 2px 7px black);
+  animation: zoomInOut 4s infinite;
   &:hover {
     color: rgba(19, 214, 180, 1);
     text-decoration: underline;
+  filter: drop-shadow(2px 2px 7px grey);
   }
   @media only screen and (max-width: 1000px) {
     font-size: 0.72rem;
@@ -82,10 +85,10 @@ function Auth() {
     setError(null);
     if (!registerForm) {
       const result = await login(username, password);
-      if (result.access) {
+      if (result.success) {
         setLocation("/garage");
-      } else {
-        toast.error("Invalid username or password!");
+      } else if (result.message) {
+        toast.error(result.message, "Invalid username or password!");
         setError(JSON.parse(result.message).error);
       }
     } else {
@@ -93,6 +96,8 @@ function Auth() {
       if (result.success) {
         setRegisterForm(false)
         setLocation("/login")
+      } else {
+        toast.error(result.message);
       }
     }
   
@@ -105,6 +110,7 @@ function Auth() {
   return (
     <Container>
       <img src={logo} width={120} height={120}></img>
+      <SmallTitle>Car Care</SmallTitle>
       <Title>{registerForm ? "Register" : "Login"}</Title>
       <Form onSubmit={handleSubmit}>          
         <Input 

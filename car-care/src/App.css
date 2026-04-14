@@ -29,3 +29,9 @@ h1 {
   justify-content: center;
 }
 
+@keyframes zoomInOut {
+  0% {scale: 1}
+  50% {scale: 1.04; transform: skewY(2deg);}
+  100% {scale: 1; transform: skewY(0deg);}
+}
+

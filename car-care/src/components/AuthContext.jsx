@@ -6,9 +6,9 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [message, setMessage] = useState(null)
+    const [message, setMessage] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [serverDown, setServerDown] = useState(false)
+    const [serverDown, setServerDown] = useState(false);
 
     useEffect(() => {
         const checkLoggedIn = async () => {
@@ -48,12 +48,12 @@ export const AuthProvider = ({ children }) => {
         try {
             const response = await AuthAPI.register(username, password);
             setMessage(response.data.msg);
-            return {success: true};
+            return { success: true };
 
         } catch (error) {
-            console.error(error.response.data);
-            toast.error(`Error: ${error.response.data[1]}`);
-            return {success: false, message: error};
+            console.error(error.response?.data[0]);
+            const errorMsg = error.response?.data[0];
+            return { success: false, message: errorMsg };
         }
     }
 
@@ -73,15 +73,16 @@ export const AuthProvider = ({ children }) => {
                 setUser(username);
             }
 
-            return { succes: true, access, refresh };
+            return { success: true, access, refresh };
             
         } catch (error) {
-            let errorMessage = "Error occured."
+            let errorMessage = "Error during login.";
+            
             if (error.response && error.response.data) {
                 errorMessage = error.response.data.detail || JSON.stringify(error.response.data);
-                toast.errror(errorMessage);
             }
-            return { success: false, message: errorMessage };
+            
+            return { success: false, access: null, message: errorMessage };
         }
     };
 

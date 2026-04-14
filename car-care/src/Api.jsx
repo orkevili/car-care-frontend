@@ -26,11 +26,14 @@ apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         if(error.response && error.response.status === 401) {
+            if (error.config.url.includes('login/')) {
+                return Promise.reject(error);
+            }
             console.warn("Session expired or unauthorized");
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
             localStorage.removeItem("user");
-            window.location.href = '/login/';
+            window.location.reload()
         }
         return Promise.reject(error);
     }
